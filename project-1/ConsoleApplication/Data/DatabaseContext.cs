@@ -7,8 +7,8 @@ using Program.Model;
 
 public class DatabaseContext : DbContext
 {
-    public DbSet<User> User { get; set; } = null!;
-    public DbSet<Todo> Todo { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Todo> Todos { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -31,8 +31,8 @@ public class DatabaseContext : DbContext
         // Id: Make it autoincrement on add.
         modelBuilder.Entity<User>().Property(ent => ent.Id).ValueGeneratedOnAdd();
         // Name and Password: Make them required.
-        modelBuilder.Entity<User>().Property(ent => ent.name).IsRequired();
-        modelBuilder.Entity<User>().Property(ent => ent.password).IsRequired();
+        modelBuilder.Entity<User>().Property(ent => ent.Name).IsRequired();
+        modelBuilder.Entity<User>().Property(ent => ent.Password).IsRequired();
 
 
         // TODO table set up
@@ -42,7 +42,7 @@ public class DatabaseContext : DbContext
         // Id: Make it autoincrement on add.
         modelBuilder.Entity<Todo>().Property(ent => ent.Id).ValueGeneratedOnAdd();
         // Content and UserId: Make them required.
-        modelBuilder.Entity<Todo>().Property(ent => ent.content).IsRequired();
+        modelBuilder.Entity<Todo>().Property(ent => ent.Content).IsRequired();
         modelBuilder.Entity<Todo>().Property(ent => ent.UserId).IsRequired();
 
         // Create non-clustered index on UserId.

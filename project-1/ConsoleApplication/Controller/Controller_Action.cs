@@ -9,30 +9,33 @@ using Program.Model;
 public partial class Controller
 {
     private Screen ConsoleScreen = null!;
-    private DatabaseContext Context = null!;
+    private UserService UserService = null!;
 
     public Controller()
     {
         ConsoleScreen = new Screen();
-        Context = new DatabaseContext();
+        UserService = new UserService();
     }
 
-    ~Controller()
-    {
-        Context.Dispose();
-    }
-
-    [Command(name:"TEST", description:
-    @"[C]test arg1
-    [E]This is the test Description.")]
+    [Command(name:"REGISTER", description:
+    @"[C]register [username] [password]
+    [E]Attempts to register a new user.")]
     public int SomeMethod(String[] args)
     {
-        User u = new User();
-        u.name = "user_name";
-        u.password = "user_password";
-        Context.Add<User>(u);
-        Context.SaveChanges();
-        ConsoleScreen.PrintScreen("User added.");
+        // do input val later, for now just focus on func
+
+        ConsoleScreen.PrintScreen("Please wait...");
+        User? newUser = new User{Name = args[0], Password = args[1]};
+
+        newUser = UserService.addUser(newUser);
+
+        if(newUser == null)
+        {
+            ConsoleScreen.PrintScreen("Username taken. Try another one.");
+            return 1;
+        }
+
+        ConsoleScreen.PrintScreen($"User created. User ID is: {newUser.Id}.");
         return 1;
     }
 

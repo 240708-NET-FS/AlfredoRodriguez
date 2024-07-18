@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 public class User
 {
     public int Id { get; set; }
-    public String name { get; set; } = null!;
-    public String password { get; set; } = null!;
+    public String Name { get; set; } = null!;
+    public String Password { get; set; } = null!;
     public ICollection<Todo> Todos { get; set; } = null!;
 }
