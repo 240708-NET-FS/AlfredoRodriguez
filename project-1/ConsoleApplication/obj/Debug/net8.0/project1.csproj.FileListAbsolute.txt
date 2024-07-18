@@ -1,0 +1,14 @@
+/home/dmo/projects/revature/training/proj1/project1/bin/Debug/net8.0/project1
+/home/dmo/projects/revature/training/proj1/project1/bin/Debug/net8.0/project1.deps.json
+/home/dmo/projects/revature/training/proj1/project1/bin/Debug/net8.0/project1.runtimeconfig.json
+/home/dmo/projects/revature/training/proj1/project1/bin/Debug/net8.0/project1.dll
+/home/dmo/projects/revature/training/proj1/project1/bin/Debug/net8.0/project1.pdb
+/home/dmo/projects/revature/training/proj1/project1/obj/Debug/net8.0/project1.GeneratedMSBuildEditorConfig.editorconfig
+/home/dmo/projects/revature/training/proj1/project1/obj/Debug/net8.0/project1.AssemblyInfoInputs.cache
+/home/dmo/projects/revature/training/proj1/project1/obj/Debug/net8.0/project1.AssemblyInfo.cs
+/home/dmo/projects/revature/training/proj1/project1/obj/Debug/net8.0/project1.csproj.CoreCompileInputs.cache
+/home/dmo/projects/revature/training/proj1/project1/obj/Debug/net8.0/project1.dll
+/home/dmo/projects/revature/training/proj1/project1/obj/Debug/net8.0/refint/project1.dll
+/home/dmo/projects/revature/training/proj1/project1/obj/Debug/net8.0/project1.pdb
+/home/dmo/projects/revature/training/proj1/project1/obj/Debug/net8.0/project1.genruntimeconfig.cache
+/home/dmo/projects/revature/training/proj1/project1/obj/Debug/net8.0/ref/project1.dll
