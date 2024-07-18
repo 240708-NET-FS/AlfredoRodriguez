@@ -1,21 +1,38 @@
 namespace Program.ApplicationController;
 
 using Program.Utils;
+using Program.Data;
+using Program.Model;
 
 
 // This would be the place where we define all the commands
 public partial class Controller
 {
-    private Screen ConsoleScreen;
+    private Screen ConsoleScreen = null!;
+    private DatabaseContext Context = null!;
 
-    public Controller() => ConsoleScreen = new Screen();
+    public Controller()
+    {
+        ConsoleScreen = new Screen();
+        Context = new DatabaseContext();
+    }
+
+    ~Controller()
+    {
+        Context.Dispose();
+    }
 
     [Command(name:"TEST", description:
     @"[C]test arg1
     [E]This is the test Description.")]
     public int SomeMethod(String[] args)
     {
-        ConsoleScreen.PrintScreen("You just executed the method related to the TEST command !");
+        User u = new User();
+        u.name = "user_name";
+        u.password = "user_password";
+        Context.Add<User>(u);
+        Context.SaveChanges();
+        ConsoleScreen.PrintScreen("User added.");
         return 1;
     }
 
