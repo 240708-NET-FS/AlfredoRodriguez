@@ -5,11 +5,11 @@ using Program.ApplicationController;
 using Program.Utils;
 
 
-// Initialized the program and starts the execution loop.
+// Initializes the program and starts the execution loop.
 public class ConsoleApp
 {
-    private Controller AppController = null;
-    private MethodInfo[] ControllerMethods = null;
+    private Controller AppController = null!;
+    private MethodInfo[] ControllerMethods = null!;
 
     public ConsoleApp()
     {
@@ -29,9 +29,9 @@ public class ConsoleApp
         while(commandExitCode != 0)
         {
             // Holds the command.
-            String command = null;
+            String command = null!;
             // Holds the arguments for the command.
-            String[] args = null;
+            String[] args = null!;
 
             // Get and validate input syntax.
             ParseInput(Console.ReadLine(), out command, out args);
