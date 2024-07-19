@@ -32,12 +32,16 @@ public class ConsoleApp
             String command = null!;
             // Holds the arguments for the command.
             String[] args = null!;
+            // Set the command context
 
             // Get and validate input syntax.
             ParseInput(Console.ReadLine(), out command, out args);
 
             // Execute proper method handler for the command.
             commandExitCode = ExecuteMethodHandler(command, args);
+
+            Session.GetInstance().CommandContext = "HOME";
+            Screen.GetInstance().PrintScreen();
         }
     }
 
@@ -91,6 +95,9 @@ public class ConsoleApp
                 // If the method's command equals the user requested command:
                 if(commandAtt.Name.ToUpper().Equals(command.ToUpper()))
                 {
+                    // Set the command context (the txt at the bottom right that tells you with what you are interacting with)
+                    Session.GetInstance().CommandContext = command.ToUpper();
+
                     // Prepare method arguments.
                     Object[] methodArgs = {args};
 
@@ -101,6 +108,6 @@ public class ConsoleApp
         }
 
         // If command not found, execute the error command.
-        return AppController.Error("Command not found. Type [ help ] for a list of commands");
+        return AppController.Error(["Command not found. Type [ help ] for a list of commands"]);
     }
 }

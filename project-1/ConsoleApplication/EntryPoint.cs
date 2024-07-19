@@ -1,6 +1,5 @@
 ﻿namespace Program;
 
-
 public class EntryPoint
 {
     public static void Main(String[] args)
@@ -8,5 +7,6 @@ public class EntryPoint
         ConsoleApp app = new ConsoleApp();
 
         app.Run();
+
     }
 }

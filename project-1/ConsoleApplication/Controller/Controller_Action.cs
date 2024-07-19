@@ -19,7 +19,7 @@ public partial class Controller
 
     public Controller()
     {
-        ConsoleScreen = new Screen();
+        ConsoleScreen = Screen.GetInstance();
         UserService = new UserService();
     }
 
@@ -29,7 +29,7 @@ public partial class Controller
     public int Register(String[] args)
     {
         // Check that args count is exactly two.
-        if(args.Length != 2) return Error($"The [ register ] command requires TWO arguments, not {args.Length}.");
+        if(args.Length != 2) return Error([$"The [ register ] command requires TWO arguments, not {args.Length}."]);
 
         // Give those arguments a name for readability.
         String name = args[0];
@@ -50,7 +50,7 @@ public partial class Controller
     [E]Deletes the account you are logged at along all its data.")]
     public int DeleteAccount(String[] args)
     {
-        if(args.Length != 0) return Error("The [ deleteme ] command doesnt take any additional arguments.");
+        if(args.Length != 0) return Error(["The [ deleteme ] command doesnt take any additional arguments."]);
 
         UserService.DeleteAccount();
 
@@ -63,7 +63,7 @@ public partial class Controller
     public int Login(String[] args)
     {
         // Check that args count is exactly two.
-        if(args.Length != 2) return Error($"The [ login ] command requires TWO arguments, not {args.Length}.");
+        if(args.Length != 2) return Error([$"The [ login ] command requires TWO arguments, not {args.Length}."]);
 
         // Give those arguments a name for readability.
         String name = args[0];
@@ -80,7 +80,7 @@ public partial class Controller
     public int Logout(String[] args)
     {
         // Check that args count is exactly 0.
-        if(args.Length != 0) return Error($"The [ logout ] command doesn't take any extra arguments.");
+        if(args.Length != 0) return Error([$"The [ logout ] command doesn't take any extra arguments."]);
 
         UserService.LogoutUser();
         
@@ -106,13 +106,10 @@ public partial class Controller
         }
 
         // Print the error
-        ConsoleScreen.PrintScreen($"> {errorMessage}", Screen.InputState.ALLOWED, "ERROR", ConsoleColor.Red);
-        return 1;
-    }
 
-    public int Error(String msg)
-    {
-        return Error([msg]);
+        ConsoleScreen.UpdateScreenContent([$"> {errorMessage}"], [ConsoleColor.Red], false);
+        ConsoleScreen.PrintScreen(Screen.InputState.ALLOWED);
+        return 1;
     }
 
     [Command(name:"HELP", description:
@@ -129,13 +126,18 @@ public partial class Controller
     [E]Exits the application.")]
     public int Exit(String[] args)
     {
-        ConsoleScreen.ClearScreen();
         return 0;
     }
 
     public int Welcome()
     {
-        ConsoleScreen.PrintScreen("Welcome.\n\nLogin with -> login [username] [password]\nRegister with -> register [username] [password]", Screen.InputState.ALLOWED, "WELCOME :D");
+        ConsoleScreen.UpdateScreenContent([
+            "Welcome.",
+            "",
+            "",
+            "Login with -> login [username] [password]",
+            "Register with -> register [username] [password]"
+            ]);
         return 1;
     }
 }

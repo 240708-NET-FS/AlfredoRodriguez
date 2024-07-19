@@ -15,7 +15,7 @@ public class UserService
     public UserService()
     {
         UserDAO = new UserDAO();
-        Screen = new Screen();
+        Screen = Screen.GetInstance();
     }
 
     public User? AddUser(String name, String password)
@@ -28,7 +28,7 @@ public class UserService
         // Check if the user is logged in.
         if(Session.GetInstance().User == null)
         {
-            Screen.PrintScreen("You must be logged in on the account you whish to delete.", Screen.InputState.ALLOWED, "HOME");
+            Screen.UpdateScreenContent(["You must be logged in on the account you whish to delete."]);
             return;
         }
 
@@ -37,7 +37,7 @@ public class UserService
         // This sould never happen.
         if(user is null)
         {
-            Screen.PrintScreen("Something went wrong. Please log in again.", Screen.InputState.ALLOWED, "HOME");
+            Screen.UpdateScreenContent(["Something went wrong. Please log in again."]);
             return;
         }
 
@@ -47,7 +47,7 @@ public class UserService
         // Locally logs the user out.
         Session.GetInstance().User = null!;
 
-        Screen.PrintScreen("Sorry to see you go :(", Screen.InputState.ALLOWED, "HOME");
+        Screen.UpdateScreenContent(["Account deleted."]);
     }
 
     public void RegisterUser(string name, string password)
@@ -55,22 +55,23 @@ public class UserService
         // Check that we are not logged in already.
         if(Session.GetInstance().User != null)
         {
-            Screen.PrintScreen("You cannot try to register while logged in.", Screen.InputState.ALLOWED, "HOME");
+            Screen.UpdateScreenContent(["You cannot try to register while logged in."]);
             return;
         }
         if(name.Length < 3)
         {
-            Screen.PrintScreen("The name must be at least 3 characters long", Screen.InputState.ALLOWED, "HOME");
+            Screen.UpdateScreenContent(["The name must be at least 3 characters long."]);
             return;
         }
         if(password.Length < 5)
         {
-            Screen.PrintScreen("The password must be at least 5 characters long", Screen.InputState.ALLOWED, "HOME");
+            Screen.UpdateScreenContent(["The password must be at least 5 characters long."]);
             return;
         }
 
         // Update user that we will attempt to register now.
-        Screen.PrintScreen("Registering...", Screen.InputState.FORBIDDEN, "REGISTER");
+        Screen.UpdateScreenContent(["Registering..."], null, false);
+        Screen.PrintScreen(Screen.InputState.FORBIDDEN);
 
         // Attempt to register
         User? user = UserDAO.AddUser(new User{Name = name, Password = password});
@@ -79,14 +80,14 @@ public class UserService
         // future)
         if(user is null)
         {
-            Screen.PrintScreen("Username already taken.", Screen.InputState.ALLOWED, "HOME");
+            Screen.UpdateScreenContent(["Username already taken."]);
             return;
         }
         
         LoginUser(user.Name, user.Password);
 
         // Inform the user that we are registered and logged in.
-        Screen.PrintScreen("Account created and logged in.", Screen.InputState.ALLOWED, "HOME");
+        Screen.UpdateScreenContent(["Account created and logged in."]);
     }
 
     public void LoginUser(String name, String password)
@@ -94,45 +95,49 @@ public class UserService
         // Check that we are not logged in already.
         if(Session.GetInstance().User != null)
         {
-            Screen.PrintScreen("You are already logged in with an account.", Screen.InputState.ALLOWED, "HOME");
+            Screen.UpdateScreenContent(["You are already logged in with an account."]);
             return;
         }
 
         // Inform user that we are attempting to login.
-        Screen.PrintScreen("Logging you in...", Screen.InputState.FORBIDDEN, "LOGIN");
+        Screen.UpdateScreenContent(["Logging you in..."], null, false);
+        Screen.PrintScreen(Screen.InputState.FORBIDDEN);
+
 
         User? user = UserDAO.GetUserByName(name);
 
         if(user is null)
         {
-            Screen.PrintScreen("Incorrect user.", Screen.InputState.ALLOWED, "HOME");
+            Screen.UpdateScreenContent(["Incorrect user."]);
             return;
         }
 
         if(!user.Password.Contains(password))
         {
-            Screen.PrintScreen("Incorrect password.", Screen.InputState.ALLOWED, "HOME");
+            Screen.UpdateScreenContent(["Incorrect password."]);
             return;
         }
 
         // Record that the user is logged in.
         Session.GetInstance().User = name;
 
-        Screen.PrintScreen("Logged in.", Screen.InputState.ALLOWED, "HOME");
+        Screen.UpdateScreenContent(["Logged in."]);
     }
+
 
     public void LogoutUser()
     {
         // Check that we are not logged in already.
         if(Session.GetInstance().User == null)
         {
-            Screen.PrintScreen("You must be logged in in order to log out.", Screen.InputState.ALLOWED, "HOME");
+            Screen.UpdateScreenContent(["You must be logged in in order to log out."]);
             return;
         }
 
         // This effectively logs the user out.
         Session.GetInstance().User = null!;
 
-        Screen.PrintScreen("Bye.", Screen.InputState.ALLOWED, "HOME");
+        Screen.UpdateScreenContent(["Bye."]);
+
     }
 }

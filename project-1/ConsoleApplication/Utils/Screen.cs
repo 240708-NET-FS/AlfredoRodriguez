@@ -1,6 +1,8 @@
 namespace Program.Utils;
 
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Program.ApplicationController;
 
 
@@ -9,40 +11,46 @@ class Screen
 {
     public enum InputState
     {
-        ALLOWED, // Visuually display the console's input line as if it allowed input.
+        ALLOWED, // Visually display the console's input line as if it allowed input.
         FORBIDDEN // Visually display the console's input line as if not allowing input.
     };
 
-    private static int lineTokenLen = 3;
+    private int lineTokenLen = 3;
+    private const int ReservedLinesCount = 3;
+    private String[]? Contents = null;
+    private ConsoleColor[]? ContentColors = null;
+    private int ContentsPage = 0;
+    static private Screen Instance = null!;
 
-    // Deines the screen's UI. Prints contents on the correct place of the UI.
-    public void PrintScreen(String content, InputState state, String command, ConsoleColor color = ConsoleColor.White)
+    private Screen(){}
+    static public Screen GetInstance()
     {
-        PrintScreen(new String[]{content}, state, command, new ConsoleColor[]{color});
+        if(Instance is null)
+        {
+            Instance = new Screen();
+        }
+
+        return Instance;
     }
 
-/*
-Presentation takes from consolke
-Service does logid
-repo communicates with the database
-
-*/
-    public void PrintScreen(String[] lines, InputState state, String command, ConsoleColor[] colors)
+    // Updates the screen contents.
+    public void UpdateScreenContent(String[] contents, ConsoleColor[]? colors = null, bool print = true)
     {
-        Console.ResetColor();
+        Contents = contents;
+        ContentColors = colors is null ? [ConsoleColor.White] : colors;
+        ContentsPage = 0;
+        if(print) PrintScreen();
+    }
+
+    // Displays the screen contents. Also allows you to set the input state and the command
+    public void PrintScreen(InputState state = InputState.ALLOWED)
+    {
         Console.Clear();
+        Console.ResetColor();
         PrintHeadLine();
         PrintInfoLine();
-
-        Console.WriteLine();
-        for(int i = 0; i < lines.Length; i++)
-        {
-            Console.ForegroundColor = colors[i < colors.Length ? i : colors.Length - 1];
-            Console.Write(lines[i]);
-        }
-        Console.ForegroundColor = ConsoleColor.White;
-
-        PrintInputLine(state, command);
+        PrintContentPage();
+        PrintInputLine(state);
     }
 
     // Prints out all the commands.
@@ -77,7 +85,7 @@ repo communicates with the database
         }
 
         // Prints all the lines on their corresponding colors.
-        PrintScreen(lines.ToArray<String>(), InputState.ALLOWED, "HOME", colors.ToArray<ConsoleColor>());
+        UpdateScreenContent(lines.ToArray<String>(),colors.ToArray<ConsoleColor>());
     }
 
     // String descLine: A line composed of an initial token in the form of "[X]" and a sentence that follows.
@@ -111,19 +119,19 @@ repo communicates with the database
             case "[C]":
             {
                 colors.Add(ConsoleColor.Green);
-                lines.Add(new string(line) + "\n");
+                lines.Add(new string(line));
                 return;
             }
             case "[E]":
             {
                 colors.Add(ConsoleColor.Blue);
-                lines.Add("    " + new string(line) + "\n");
+                lines.Add("    " + new string(line));
                 return;
             }
             case "[U]":
             {
                 colors.Add(ConsoleColor.White);
-                lines.Add("    " + new string(line)! + "\n");
+                lines.Add("    " + new string(line));
                 return;
             }
             default:
@@ -131,23 +139,18 @@ repo communicates with the database
                 // If the token is non of the ones listed here, we cannot assume that the initial characters were meant to be a toke nat all,
                 // so we just add the whole description line as it is and set the color to white.
                 colors.Add(ConsoleColor.White);
-                lines.Add(descLine + "\n");
+                lines.Add(descLine);
                 return;
             }
         }
     }
 
-    // Clears the screen.
-    public void ClearScreen()
-    {
-        Console.Clear();
-    }
-
-
     // Prints the info line (second line)
     private void PrintInfoLine()
     {
-        String userName = Session.GetInstance().User;
+        Console.ResetColor();
+
+        String? userName = Session.GetInstance().User;
         bool isOnline = Session.GetInstance().User != null;
         String status = isOnline ? "LOGGED IN" : "NOT LOGGED IN";
 
@@ -160,11 +163,15 @@ repo communicates with the database
         Console.Write($"{status}");
         Console.ResetColor();
         Console.Write(" ] " + (isOnline ? $"as {userName}." : ""));
+
+        Console.WriteLine();
     }
 
     // Takes care of printing the head line (first line)
     private void PrintHeadLine()
     {
+        Console.ResetColor();
+
         const String headTitle = " todo ";
         for(int i = 0; i < Console.WindowWidth; i++)
         {
@@ -183,24 +190,63 @@ repo communicates with the database
 
     private void PrintContentPage()
     {
+        Console.ResetColor();
+        // If there is no content to print, return.
+        if(Contents is null) return;
+        // If there is no defined color, use White.
+        if(ContentColors is null) ContentColors = [ConsoleColor.White];
 
+        bool isMultiPage = Contents.Length > Console.WindowHeight - ReservedLinesCount;
+
+        int availibleLines = Console.WindowHeight - (isMultiPage ? ReservedLinesCount + 1 : ReservedLinesCount);
+        // Find the starting index for the page in content.
+        int copyStartAtIndex = ContentsPage * availibleLines;
+        // Find the ending index for the page in the content.
+        int copyEndAfterIndex = copyStartAtIndex + availibleLines - 1;
+        // Trim the ending index according to the content (in case a page can hold up to X items naturally but there are only (X - Y) availible).
+        copyEndAfterIndex = copyEndAfterIndex >= Contents.Length ? Contents.Length - 1 : copyEndAfterIndex;
+
+        for(int i = copyStartAtIndex; i <= copyEndAfterIndex; i++)
+        {
+            Console.ForegroundColor = ContentColors[i < ContentColors.Length ? i : ContentColors.Length - 1];
+            Console.WriteLine(Contents[i]);
+        }
+
+        if(isMultiPage)
+        {
+            Console.ResetColor();
+            int totalPages = (Contents.Length / availibleLines);
+            totalPages = (Contents.Length % availibleLines) > 0 ? totalPages + 1 : totalPages;
+            Console.SetCursorPosition(0, Console.WindowHeight - 2);
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.WriteLine($"page{ContentsPage + 1}/{totalPages}");
+            Console.ResetColor();
+        }
     }
 
-    private void PrintInputLine(InputState state, String command, ConsoleColor color = ConsoleColor.DarkGray)
+    public void NextPage()
     {
+        if(Contents is null) return;
+
+        if((Contents.Length / (Console.WindowHeight - ReservedLinesCount)) + 
+        Contents.Length % (Console.WindowHeight - ReservedLinesCount) > ContentsPage)
+        {
+            ContentsPage++;
+            PrintScreen(InputState.ALLOWED);
+        }
+    }
+
+    private void PrintInputLine(InputState state, ConsoleColor color = ConsoleColor.DarkGray)
+    {
+        Console.ResetColor();
         Console.SetCursorPosition(0, Console.WindowHeight);
         Console.ForegroundColor = state == InputState.ALLOWED ? ConsoleColor.White : ConsoleColor.DarkGray;
         Console.Write(">>>");
-        Console.SetCursorPosition(Console.WindowWidth - command.Length, Console.WindowHeight);
+        Console.SetCursorPosition(Console.WindowWidth - Session.GetInstance().CommandContext.Length, Console.WindowHeight);
         Console.ForegroundColor = color;
-        Console.Write(command);
+        Console.Write(Session.GetInstance().CommandContext);
         Console.ForegroundColor = ConsoleColor.White;
         Console.SetCursorPosition(4, Console.WindowHeight);
-    }
-
-    public void PromptQuestion(string question)
-    {
-        Console.Clear();
-
     }
 }
