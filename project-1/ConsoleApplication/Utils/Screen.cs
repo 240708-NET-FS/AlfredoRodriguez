@@ -7,12 +7,18 @@ using Program.ApplicationController;
 // Manages the console's UI.
 class Screen
 {
+    public enum InputState
+    {
+        ALLOWED, // Visuually display the console's input line as if it allowed input.
+        FORBIDDEN // Visually display the console's input line as if not allowing input.
+    };
+
     private static int lineTokenLen = 3;
 
     // Deines the screen's UI. Prints contents on the correct place of the UI.
-    public void PrintScreen(String content, ConsoleColor color = ConsoleColor.White)
+    public void PrintScreen(String content, InputState state, String command, ConsoleColor color = ConsoleColor.White)
     {
-        PrintScreen(new String[]{content}, new ConsoleColor[]{color});
+        PrintScreen(new String[]{content}, state, command, new ConsoleColor[]{color});
     }
 
 /*
@@ -21,7 +27,7 @@ Service does logid
 repo communicates with the database
 
 */
-    public void PrintScreen(String[] lines, ConsoleColor[] colors)
+    public void PrintScreen(String[] lines, InputState state, String command, ConsoleColor[] colors)
     {
         Console.ResetColor();
         Console.Clear();
@@ -35,9 +41,8 @@ repo communicates with the database
             Console.Write(lines[i]);
         }
         Console.ForegroundColor = ConsoleColor.White;
-        //Console.WriteLine("\n");
-        //Console.Write(">>> ");
-        PrintInputLine();
+
+        PrintInputLine(state, command);
     }
 
     // Prints out all the commands.
@@ -57,7 +62,11 @@ repo communicates with the database
             else
             {
                 // Get description lines.
-                String[] descLines = att.Description.Split("\n");
+                String? commandDescription = att.Description;
+                
+                if(commandDescription is null) continue;
+
+                String[] descLines = commandDescription.Split("\n");
 
                 for(int i = 0; i < descLines.Length; i++)
                 {
@@ -68,7 +77,7 @@ repo communicates with the database
         }
 
         // Prints all the lines on their corresponding colors.
-        PrintScreen(lines.ToArray<String>(), colors.ToArray<ConsoleColor>());
+        PrintScreen(lines.ToArray<String>(), InputState.ALLOWED, "HOME", colors.ToArray<ConsoleColor>());
     }
 
     // String descLine: A line composed of an initial token in the form of "[X]" and a sentence that follows.
@@ -177,14 +186,14 @@ repo communicates with the database
 
     }
 
-    private void PrintInputLine(String message = "This is a test", ConsoleColor color = ConsoleColor.DarkGray)
+    private void PrintInputLine(InputState state, String command, ConsoleColor color = ConsoleColor.DarkGray)
     {
         Console.SetCursorPosition(0, Console.WindowHeight);
+        Console.ForegroundColor = state == InputState.ALLOWED ? ConsoleColor.White : ConsoleColor.DarkGray;
         Console.Write(">>>");
-        Console.SetCursorPosition(Console.WindowWidth - message.Length, Console.WindowHeight);
+        Console.SetCursorPosition(Console.WindowWidth - command.Length, Console.WindowHeight);
         Console.ForegroundColor = color;
-        Console.Write(message);
-        //Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.Write(command);
         Console.ForegroundColor = ConsoleColor.White;
         Console.SetCursorPosition(4, Console.WindowHeight);
     }
