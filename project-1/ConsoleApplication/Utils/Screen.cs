@@ -63,7 +63,7 @@ repo communicates with the database
             {
                 // Get description lines.
                 String? commandDescription = att.Description;
-                
+
                 if(commandDescription is null) continue;
 
                 String[] descLines = commandDescription.Split("\n");
@@ -149,7 +149,7 @@ repo communicates with the database
     {
         String userName = Session.GetInstance().User;
         bool isOnline = Session.GetInstance().User != null;
-        String status = isOnline ? "LOGGED IN" : "LOG IN";
+        String status = isOnline ? "LOGGED IN" : "NOT LOGGED IN";
 
         ConsoleColor statusColor = isOnline ? ConsoleColor.Green : ConsoleColor.Red;
 
