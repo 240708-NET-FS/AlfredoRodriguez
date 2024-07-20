@@ -6,7 +6,7 @@ public class Session
     // Fields
     private static Session SessionInstance = null!;
     public String? User { get; set; } = null;
-    public String CommandContext { get; set; } = "HOME";
+    public Command.CommandContext CommandContext { get; set; } = Command.CommandContext.HOME;
 
     // Singleton
     public static Session GetInstance()

@@ -20,13 +20,13 @@ public class ConsoleApp
     public void Run()
     {
         // Holds the command exit code.
-        int commandExitCode = 1;
+        int commandContext = 1;
 
         // Displays the welcome console interface.
         Init();
 
         // Application loop.
-        while(commandExitCode != 0)
+        while(commandContext != 0)
         {
             // Holds the command.
             String command = null!;
@@ -38,9 +38,9 @@ public class ConsoleApp
             ParseInput(Console.ReadLine(), out command, out args);
 
             // Execute proper method handler for the command.
-            commandExitCode = ExecuteMethodHandler(command, args);
+            commandContext = ExecuteMethodHandler(command, args);
 
-            Session.GetInstance().CommandContext = "HOME";
+            // Prints the screen again in order to update the command context UI.
             Screen.GetInstance().PrintScreen();
         }
     }
@@ -92,12 +92,15 @@ public class ConsoleApp
             if(commandAtt is null) { continue; }
             else
             {
+                // If this command atribute is not of type ANY or of the current command context type accepted, continue.
+                if(commandAtt.Context != Command.CommandContext.ANY && commandAtt.Context != Session.GetInstance().CommandContext)
+                {
+                    continue;
+                }
+
                 // If the method's command equals the user requested command:
                 if(commandAtt.Name.ToUpper().Equals(command.ToUpper()))
                 {
-                    // Set the command context (the txt at the bottom right that tells you with what you are interacting with)
-                    Session.GetInstance().CommandContext = command.ToUpper();
-
                     // Prepare method arguments.
                     Object[] methodArgs = {args};
 

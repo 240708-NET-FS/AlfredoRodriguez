@@ -44,6 +44,17 @@ public partial class Controller
         return 1;
     }
 
+    [Command(name:"NOTE", description:
+    @"[C]note
+    [E]Takes you to the note context. Once there type help to explore its commands.")]
+    public int Note(String[] args)
+    {
+        Session.GetInstance().CommandContext = Command.CommandContext.NOTE;
+
+        ConsoleScreen.UpdateScreenContent(["Note context", "Type help to see [ note ] commands."]);
+
+        return 1;
+    }
 
     [Command(name:"DELETEME", description:
     @"[C]deleteme
@@ -71,73 +82,6 @@ public partial class Controller
 
         UserService.LoginUser(name, password);
         
-        return 1;
-    }
-
-    [Command(name:"LOGOUT", description:
-    @"[C]logout
-    [E]Logs you out.")]
-    public int Logout(String[] args)
-    {
-        // Check that args count is exactly 0.
-        if(args.Length != 0) return Error([$"The [ logout ] command doesn't take any extra arguments."]);
-
-        UserService.LogoutUser();
-        
-        return 1;
-    }
-
-    // Displays an error on the console
-    [Command(name:"ERROR", description:
-    @"[C]error
-    [E]Thrown when an error occurs. You can also call it and type something if you are bored, it will throw that message back.")]
-    public int Error(String[] msg)
-    {
-        // We get all the error strings from the message and combine then into one.
-        String errorMessage = "";
-        foreach (String s in msg)
-        {
-            errorMessage += s + " ";
-        }
-
-        if(errorMessage.Length == 0)
-        {
-            errorMessage = "Error. Type [ Help ] for a list of commands.";
-        }
-
-        // Print the error
-
-        ConsoleScreen.UpdateScreenContent([$"> {errorMessage}"], [ConsoleColor.Red], false);
-        ConsoleScreen.PrintScreen(Screen.InputState.ALLOWED);
-        return 1;
-    }
-
-    [Command(name:"HELP", description:
-    @"[C]help
-    [E]Prints out all availible commands.")]
-    public int Help(String[] args)
-    {
-        ConsoleScreen.PrintCommands();
-        return 1;
-    }
-
-    [Command(name:"EXIT", description:
-    @"[C]exit
-    [E]Exits the application.")]
-    public int Exit(String[] args)
-    {
-        return 0;
-    }
-
-    public int Welcome()
-    {
-        ConsoleScreen.UpdateScreenContent([
-            "Welcome.",
-            "",
-            "",
-            "Login with -> login [username] [password]",
-            "Register with -> register [username] [password]"
-            ]);
         return 1;
     }
 }

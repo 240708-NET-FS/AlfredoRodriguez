@@ -60,6 +60,11 @@ class Screen
         List<ConsoleColor> colors = new List<ConsoleColor>();
         MethodInfo[] methods = typeof(Controller).GetMethods();
 
+        lines.Add("Below is a list of all the commands you can execute while one the HOME context.");
+        lines.Add("");
+        colors.Add(ConsoleColor.White);
+        colors.Add(ConsoleColor.White);
+
         foreach (var m in methods)
         {
             // Try to get the Action Attribute
@@ -69,6 +74,12 @@ class Screen
             if(att is null) { continue; }
             else
             {
+                // If this command atribute is not of type ANY or of the current command context type accepted, continue.
+                if(att.Context != Command.CommandContext.ANY && att.Context != Session.GetInstance().CommandContext)
+                {
+                    continue;
+                }
+
                 // Get description lines.
                 String? commandDescription = att.Description;
 
@@ -157,7 +168,7 @@ class Screen
         ConsoleColor statusColor = isOnline ? ConsoleColor.Green : ConsoleColor.Red;
 
         // TODO: place this at the right maybe.
-        Console.SetCursorPosition(isOnline ? Console.WindowWidth - (9 + status.Length + userName.Length): Console.WindowWidth - (status.Length + 5),1);
+        Console.SetCursorPosition(isOnline ? Console.WindowWidth - (9 + status.Length + userName!.Length): Console.WindowWidth - (status.Length + 5),1);
         Console.Write("[ ");
         Console.ForegroundColor = statusColor;
         Console.Write($"{status}");
@@ -239,14 +250,23 @@ class Screen
 
     private void PrintInputLine(InputState state, ConsoleColor color = ConsoleColor.DarkGray)
     {
+        String contextMessage = "current context -> " + Session.GetInstance().CommandContext;
         Console.ResetColor();
         Console.SetCursorPosition(0, Console.WindowHeight);
+
         Console.ForegroundColor = state == InputState.ALLOWED ? ConsoleColor.White : ConsoleColor.DarkGray;
-        Console.Write(">>>");
-        Console.SetCursorPosition(Console.WindowWidth - Session.GetInstance().CommandContext.Length, Console.WindowHeight);
+        if(state == InputState.ALLOWED)Console.Write(">>>");
+        else Console.Write("...");
+        
+        Console.SetCursorPosition(Console.WindowWidth - contextMessage.Length, Console.WindowHeight);
         Console.ForegroundColor = color;
-        Console.Write(Session.GetInstance().CommandContext);
+        Console.Write(contextMessage);
         Console.ForegroundColor = ConsoleColor.White;
         Console.SetCursorPosition(4, Console.WindowHeight);
+    }
+
+    public void ClearScreen()
+    {
+        Console.Clear();
     }
 }
