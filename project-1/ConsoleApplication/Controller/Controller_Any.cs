@@ -77,7 +77,6 @@ public partial class Controller
     [E]Exits the application.")]
     public int Exit(String[] args)
     {
-        ConsoleScreen.ClearScreen();
         return 0;
     }
 

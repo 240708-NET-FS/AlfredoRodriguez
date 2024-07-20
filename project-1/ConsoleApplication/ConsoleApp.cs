@@ -22,7 +22,7 @@ public class ConsoleApp
         // Holds the command exit code.
         int commandContext = 1;
 
-        // Displays the welcome console interface.
+        // Initialize app
         Init();
 
         // Application loop.
@@ -43,11 +43,21 @@ public class ConsoleApp
             // Prints the screen again in order to update the command context UI.
             Screen.GetInstance().PrintScreen();
         }
+
+        // De-initialize app
+        DeInit();
     }
 
+    // Any initialization tasks go here
     private void Init()
     {
         AppController.Welcome();
+    }
+
+    // Any de-initialization tasks go here
+    private void DeInit()
+    {
+        Screen.GetInstance().ClearScreen();
     }
 
     // Retrieves and validates user input.
