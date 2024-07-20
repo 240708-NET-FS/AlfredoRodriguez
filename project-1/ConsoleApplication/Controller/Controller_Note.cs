@@ -7,9 +7,9 @@ using Program.Utils;
 // method handlers made for pagination commands.
 public partial class Controller
 {
-    [Command(context:Command.CommandContext.NOTE, name:"TESTNOTE", description:
-    @"[C]test
-    [E]Executes the TEST command on the note context.")]
+    [Command(context:Command.CommandContext.NOTE, name:"NEW", description:
+    @"[C]new [note title]
+    [E]Creates a new note with a given title.")]
     public int NoteTest(String[] args)
     {
         ConsoleScreen.UpdateScreenContent(["NOTE_TEST Executed !"]);
