@@ -17,9 +17,9 @@ class Screen
 
     private int lineTokenLen = 3;
     private const int ReservedLinesCount = 3;
-    private String[]? Contents = null;
+    private String[] Contents = [""];
     private ConsoleColor[]? ContentColors = null;
-    private int ContentsPage = 0;
+    private int ContentsPageIndex = 0;
     static private Screen Instance = null!;
 
     private Screen(){}
@@ -38,7 +38,7 @@ class Screen
     {
         Contents = contents;
         ContentColors = colors is null ? [ConsoleColor.White] : colors;
-        ContentsPage = 0;
+        ContentsPageIndex = 0;
         if(print) PrintScreen();
     }
 
@@ -60,9 +60,7 @@ class Screen
         List<ConsoleColor> colors = new List<ConsoleColor>();
         MethodInfo[] methods = typeof(Controller).GetMethods();
 
-        lines.Add("Below is a list of all the commands you can execute while one the HOME context.");
-        lines.Add("");
-        colors.Add(ConsoleColor.White);
+        lines.Add($"Commands for the { Session.GetInstance().CommandContext.ToString() } context.");
         colors.Add(ConsoleColor.White);
 
         foreach (var m in methods)
@@ -129,13 +127,13 @@ class Screen
         {
             case "[C]":
             {
-                colors.Add(ConsoleColor.Green);
+                colors.Add(ConsoleColor.Blue);
                 lines.Add(new string(line));
                 return;
             }
             case "[E]":
             {
-                colors.Add(ConsoleColor.Blue);
+                colors.Add(ConsoleColor.DarkGray);
                 lines.Add("    " + new string(line));
                 return;
             }
@@ -203,15 +201,14 @@ class Screen
     {
         Console.ResetColor();
         // If there is no content to print, return.
-        if(Contents is null) return;
+        //if(Contents is null) return;// ----------------------------------------***********
         // If there is no defined color, use White.
         if(ContentColors is null) ContentColors = [ConsoleColor.White];
 
-        bool isMultiPage = Contents.Length > Console.WindowHeight - ReservedLinesCount;
+        int availibleLines = GetContentLineCount();
 
-        int availibleLines = Console.WindowHeight - (isMultiPage ? ReservedLinesCount + 1 : ReservedLinesCount);
         // Find the starting index for the page in content.
-        int copyStartAtIndex = ContentsPage * availibleLines;
+        int copyStartAtIndex = ContentsPageIndex * availibleLines;
         // Find the ending index for the page in the content.
         int copyEndAfterIndex = copyStartAtIndex + availibleLines - 1;
         // Trim the ending index according to the content (in case a page can hold up to X items naturally but there are only (X - Y) availible).
@@ -223,7 +220,7 @@ class Screen
             Console.WriteLine(Contents[i]);
         }
 
-        if(isMultiPage)
+        if(IsContentMultiPage())
         {
             Console.ResetColor();
             int totalPages = (Contents.Length / availibleLines);
@@ -231,19 +228,39 @@ class Screen
             Console.SetCursorPosition(0, Console.WindowHeight - 2);
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = ConsoleColor.Black;
-            Console.WriteLine($"page{ContentsPage + 1}/{totalPages}");
+            Console.WriteLine($"page{ContentsPageIndex + 1}/{totalPages}");
             Console.ResetColor();
         }
     }
 
-    public void NextPage()
+    // Finds out how many lines we can use to print the content.
+    private int GetContentLineCount()
     {
-        if(Contents is null) return;
 
-        if((Contents.Length / (Console.WindowHeight - ReservedLinesCount)) + 
-        Contents.Length % (Console.WindowHeight - ReservedLinesCount) > ContentsPage)
+        bool isMultiPage = IsContentMultiPage();
+        int availibleLines = Console.WindowHeight - (isMultiPage ? ReservedLinesCount + 1 : ReservedLinesCount);
+
+        return availibleLines;
+    }
+
+    // Find out if the content takes more than one page to print.
+    private bool IsContentMultiPage()
+    {
+        return Contents.Length > Console.WindowHeight - ReservedLinesCount;
+    }
+
+    public void ChangePage(int dir)
+    {
+        int availibleLines = GetContentLineCount();
+
+        int totalPages = (Contents.Length / availibleLines);
+        totalPages = (Contents.Length % availibleLines) > 0 ? totalPages + 1 : totalPages;
+
+        int targetPage = ContentsPageIndex + 1 + dir;
+
+        if(targetPage <= totalPages && targetPage > 0)
         {
-            ContentsPage++;
+            ContentsPageIndex += dir;
             PrintScreen(InputState.ALLOWED);
         }
     }
@@ -254,10 +271,19 @@ class Screen
         Console.ResetColor();
         Console.SetCursorPosition(0, Console.WindowHeight);
 
-        Console.ForegroundColor = state == InputState.ALLOWED ? ConsoleColor.White : ConsoleColor.DarkGray;
-        if(state == InputState.ALLOWED)Console.Write(">>>");
-        else Console.Write("...");
-        
+        if(state == InputState.ALLOWED)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.CursorVisible = true;
+            System.Console.Write(">>>");
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.CursorVisible = false;
+            System.Console.Write("...");
+        }
+
         Console.SetCursorPosition(Console.WindowWidth - contextMessage.Length, Console.WindowHeight);
         Console.ForegroundColor = color;
         Console.Write(contextMessage);

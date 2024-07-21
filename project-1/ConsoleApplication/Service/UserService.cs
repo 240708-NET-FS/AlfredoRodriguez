@@ -25,14 +25,16 @@ public class UserService
 
     public void DeleteAccount()
     {
+        String? userName = Session.GetInstance().User;
+
         // Check if the user is logged in.
-        if(Session.GetInstance().User == null)
+        if(userName == null)
         {
             Screen.UpdateScreenContent(["You must be logged in on the account you whish to delete."]);
             return;
         }
 
-        User? user = UserDAO.GetUserByName(Session.GetInstance().User);
+        User? user = UserDAO.GetUserByName(userName);
 
         // This sould never happen.
         if(user is null)

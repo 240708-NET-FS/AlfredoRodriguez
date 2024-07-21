@@ -8,18 +8,18 @@ using Program.Utils;
 public partial class Controller
 {
     [Command(context:Command.CommandContext.ANY, name:">", description:
-    @"[C]>, <
-    [E]> Takes you to the next page of the content, if any.
-    [E]< Takes you to the previous page of the content, if any.")]
+    @"[C]> <
+    [E]Call those two to navigate pages on the console when availible.")]
     public int Next(String[] args)
     {
-        ConsoleScreen.NextPage();
+        ConsoleScreen.ChangePage(1);
         return 1;
     }
 
     [Command(context:Command.CommandContext.ANY, name:"<")]
     public int Previous(String[] args)
     {
+        ConsoleScreen.ChangePage(-1);
         return 1;
     }
 
@@ -86,7 +86,7 @@ public partial class Controller
     [E]Takes you to the home context.")]
     public int Home(String[] args)
     {
-        ConsoleScreen.UpdateScreenContent(["Home."]);
+        ConsoleScreen.UpdateScreenContent(["You are now on the HOME context."]);
         Session.GetInstance().CommandContext = Command.CommandContext.HOME;
         return 1;
     }
