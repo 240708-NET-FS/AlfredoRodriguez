@@ -15,8 +15,9 @@ public class TextEditor
         LoadContentToTextArray(text);
     }
 
-    private void LoadContentToTextArray(String text)
+    private void LoadContentToTextArray(String? text)
     {
+        if(text == null) return;
         foreach (char c in text)
         {
             Text.Add(c);

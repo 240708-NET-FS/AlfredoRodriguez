@@ -56,6 +56,20 @@ public partial class Controller
         return 1;
     }
 
+    [Command(name:"EDITOR", description:
+    @"[C]editor
+    [E]Starts the text editor.")]
+    public int Editor(String[] args)
+    {
+        //Session.GetInstance().CommandContext = Command.CommandContext.NOTE;
+        TextEditor editor = new TextEditor("Temp", null);
+        editor.Run();
+
+        ConsoleScreen.UpdateScreenContent(["Note context", "Type help to see [ note ] commands."]);
+
+        return 1;
+    }
+
     [Command(name:"DELETEME", description:
     @"[C]deleteme
     [E]Deletes the account you are logged at along all its data.")]
