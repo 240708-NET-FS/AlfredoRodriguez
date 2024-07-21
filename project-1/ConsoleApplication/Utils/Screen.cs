@@ -37,7 +37,7 @@ class Screen
     public void UpdateScreenContent(String[] contents, ConsoleColor[]? colors = null, bool print = true)
     {
         Contents = contents;
-        ContentColors = colors is null ? [ConsoleColor.White] : colors;
+        ContentColors = colors is null || colors.Length == 0 ? [ConsoleColor.White] : colors;
         ContentsPageIndex = 0;
         if(print) PrintScreen();
     }

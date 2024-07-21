@@ -48,11 +48,16 @@ public class DatabaseContext : DbContext
         // Create non-clustered index on UserId.
         modelBuilder.Entity<Note>().HasIndex(ent => ent.UserId);
 
+
         // Table relationships:
         //---------------------
         modelBuilder.Entity<Note>()
         .HasOne(ent => ent.User)
-        .WithMany(parent => parent.Todos)
-        .HasForeignKey(ent => ent.UserId);
+        .WithMany(parent => parent.Notes)
+        .HasForeignKey(ent => ent.UserId)
+        // This last line will allow a user to be deleted and further more, it will delete its own records assossiated with it. Which is exactly what we want.
+        // The reason this is set within the child in the relationship is because not all tables dependant on the same primary key might be OK with this. So
+        // It is a per-child thing.
+        .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -43,7 +43,40 @@ public class UserService
             return;
         }
 
-        // Remove user
+        // This loop keeps on asking for confirmation to delete the account until Y or N is pressed.
+        bool wasValidInput = true;
+        while(true)
+        {
+            // Original prompt
+            String[] prompt = ["Do you whish to delete your account and all its contents?","This action is not reversible", "Respond with Y / N"];
+
+            // If the last response to the question was not a valid response (Y or N).
+            if(!wasValidInput)
+                // Add a red text at the top reiterating that we need etiher a Y or a N.
+                Screen.UpdateScreenContent(new String[]{"You must enter Y or N."}.Concat(prompt).ToArray<String>(), [ConsoleColor.Red, ConsoleColor.White]);
+            else
+                // Ask for confirmation.
+                Screen.UpdateScreenContent(prompt);
+
+            ConsoleKeyInfo keyInfo = Console.ReadKey();
+            
+            // If Y, continue with deletion.
+            if(keyInfo.Key == ConsoleKey.Y) break;
+            // If N, cancel deletion.
+            if(keyInfo.Key == ConsoleKey.N)
+            {
+                Screen.UpdateScreenContent(["Deletion cancelled."]);
+                return;
+            }
+
+            wasValidInput = false;
+        }
+
+        // Update UI to let user know we are currently attempting to delete the account.
+        Screen.UpdateScreenContent(["Deleting..."], null, false);
+        Screen.PrintScreen(Screen.InputState.FORBIDDEN);
+
+        // Remove user.
         UserDAO.RemoveUser(user);
         
         // Locally logs the user out.

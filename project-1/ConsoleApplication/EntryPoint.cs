@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Program.Data;
+using Program.Model;
 
 namespace Program;
 
@@ -6,6 +8,16 @@ public class EntryPoint
 {
     public static void Main(String[] args)
     {
+        DatabaseContext c = Connection.Get();
+        List<User> users = c.Users.ToList();
+
+        System.Console.WriteLine("Users:");
+        foreach (var u in users)
+        {
+            System.Console.WriteLine($"id: {u.Id}, name: {u.Name}");
+        }
+        Console.ReadKey();
+        
         ConsoleApp app = new ConsoleApp();
         app.Run();
 

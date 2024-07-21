@@ -11,6 +11,7 @@ public class UserDAO
         DatabaseContext c = Connection.Get();
 
         // If user name taken, return null
+        // TODO: EXCEPTIONS
         if(GetUserByName(u.Name) != null) return null;
 
         // Add user
@@ -35,16 +36,17 @@ public class UserDAO
 
         // Remove user.
         c.Users.Remove(toRemove);
+        c.SaveChanges();
 
         return toRemove;
     }
 
 
-    // Retrieves a user by name
+    // Retrieves a user by name, null if none found
     public User? GetUserByName(string name)
     {
         DatabaseContext c = Connection.Get();
-        
-        return c.Users.FirstOrDefault(u => u.Name == name);
+
+        return c.Users.FirstOrDefault(u => u!.Name == name);
     }
 }
