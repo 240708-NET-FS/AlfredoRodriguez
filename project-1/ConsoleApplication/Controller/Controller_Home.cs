@@ -8,34 +8,7 @@ using Program.Model;
 public partial class Controller
 {
    
-    // Attempts to register a new user.
-    [Command(name:"HOME", description:
-    @"[C]home
-    [E]The homescreen of the HOME context.")]
-    public int HomeHome(String[] args)
-    {
-        // Validate input.
-        if(!ValidateInput("HOME", [], args)) return -1;
 
-        // Set context to HOME.
-        Session.GetInstance().CommandContext = Command.CommandContext.HOME;
-
-        // Get the user if any.
-        String? user = Session.GetInstance().User?.Name;
-
-        // If there is no user, print welcome screen.
-        if(user is null) return Welcome();
-
-        // Print HOME screen
-        ConsoleScreen.UpdateScreenContent
-        ([
-            $"Welcome {user}.",
-            "",
-            "Type [ help ] for a list of commands."
-        ]);
-
-        return 1;
-    }
 
     // Attempts to register a new user.
     [Command(name:"REGISTER", description:
@@ -75,7 +48,7 @@ public partial class Controller
     public int DeleteAccount(String[] args)
     {
         // Validate input.
-        if(ValidateInput("DELETEME", [], args)) return -1;
+        if(!ValidateInput("DELETEME", [], args)) return -1;
 
         // Attempt to delete the account.
         UserService.DeleteAccount();
@@ -96,7 +69,8 @@ public partial class Controller
         String password = args[1];
 
         // Login user.
-        UserService.LoginUser(name, password);
+        if(UserService.LoginUser(name, password))
+            HomeHome([]);
         
         return 1;
     }

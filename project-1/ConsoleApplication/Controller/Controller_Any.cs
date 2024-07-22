@@ -7,6 +7,36 @@ using Program.Utils;
 // Global connext commands can set the command context at will.
 public partial class Controller
 {
+
+    // Attempts to register a new user.
+    [Command(context:Command.CommandContext.ANY, name:"HOME", description:
+    @"[C]home
+    [E]Takes you to the home context.")]
+    public int HomeHome(String[] args)
+    {
+        // Validate input.
+        if(!ValidateInput("HOME", [], args)) return -1;
+
+        // Set context to HOME.
+        Session.GetInstance().CommandContext = Command.CommandContext.HOME;
+
+        // Get the user if any.
+        String? user = Session.GetInstance().User?.Name;
+
+        // If there is no user, print welcome screen.
+        if(user is null) return Welcome();
+
+        // Print HOME screen
+        ConsoleScreen.UpdateScreenContent
+        ([
+            $"Welcome, {user}.",
+            "",
+            "Type [ help ] for a list of commands."
+        ], [ConsoleColor.White, ConsoleColor.DarkGray]);
+
+        return 1;
+    }
+
     // Move to the next page of the content, if any.
     [Command(context:Command.CommandContext.ANY, name:">", description:
     @"[C]> <
@@ -38,8 +68,7 @@ public partial class Controller
         // Log user out.
         UserService.LogoutUser();
 
-        // Enter the HOME context.
-        Session.GetInstance().CommandContext = Command.CommandContext.HOME;
+        HomeHome([]);
         return 1;
     }
 
@@ -86,21 +115,6 @@ public partial class Controller
         return 0;
     }
 
-
-    // Takes the user to the HOME command context.
-    // This is a HOME contex's entry command.
-    [Command(context:Command.CommandContext.ANY, name:"HOME", description:
-    @"[C]home
-    [E]Takes you to the home context.")]
-    public int Home(String[] args)
-    {
-        // Validate input.
-        if(!ValidateInput("HOME", [], args)) return -1;
-
-        // Call HOME's context entry point.
-        return HomeHome(args);
-    }
-
     // Prints a Welcome screen.
     // This command is not availible to the user.
     // This is a HOME contex's entry command.
@@ -118,9 +132,9 @@ public partial class Controller
             "Login: login [username] [password]",
             "Register: register [username] [password]",
             "More: help",
-        ]);
+        ], [ConsoleColor.White, ConsoleColor.DarkGray]);
         
-        return 0;
+        return 1;
     }
 
 }

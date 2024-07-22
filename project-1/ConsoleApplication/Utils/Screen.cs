@@ -181,7 +181,7 @@ class Screen
     {
         Console.ResetColor();
 
-        const String headTitle = " todo ";
+        const String headTitle = " CloudNotes ";
         for(int i = 0; i < Console.WindowWidth; i++)
         {
             if(i == (Console.WindowWidth / 2) - (headTitle.Length / 2))

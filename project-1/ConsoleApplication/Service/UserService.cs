@@ -125,13 +125,13 @@ public class UserService
         Screen.UpdateScreenContent(["Account created and logged in."]);
     }
 
-    public void LoginUser(String name, String password)
+    public bool LoginUser(String name, String password)
     {
         // Check that we are not logged in already.
         if(Session.GetInstance().User != null)
         {
             Screen.UpdateScreenContent(["You are already logged in with an account."]);
-            return;
+            return false;
         }
 
         // Inform user that we are attempting to login.
@@ -144,19 +144,19 @@ public class UserService
         if(user is null)
         {
             Screen.UpdateScreenContent(["Incorrect user."]);
-            return;
+            return false;
         }
 
         if(!user.Password.Contains(password))
         {
             Screen.UpdateScreenContent(["Incorrect password."]);
-            return;
+            return false;
         }
 
         // Record that the user is logged in.
         Session.GetInstance().User = user;
 
-        Screen.UpdateScreenContent(["Logged in."]);
+        return true;
     }
 
 

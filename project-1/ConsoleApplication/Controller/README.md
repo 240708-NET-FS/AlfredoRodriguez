@@ -17,11 +17,10 @@
 - Every context has ONE single entry point command.
 
 ### HOME
+- HOME: Entry point
 - REGISTER
-- NOTES: calls NOTES:NOTES
 - DELETEME
 - LOGIN
-- HOME: Entry point
 
 ### NOTES
 - NOTES: Entry point
@@ -32,9 +31,11 @@
 ### ANY
 - >
 - <
-- LOGOUT: calls HOME:HOME
 - ERROR
 - HELP
 - EXIT
+- LOGOUT: calls HOME:HOME
 - HOME: calls HOME:HOME
 
+### The home context
+The home context is an exception because it is the main context. It is the only context that can be accesses trough any context.

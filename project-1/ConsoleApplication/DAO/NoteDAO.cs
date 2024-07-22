@@ -5,11 +5,11 @@ using Program.Utils;
 namespace Program.DAO;
 public class NoteDAO
 {
-    public List<Note>? GetAllNotesByUserName(String username)
+    public List<Note> GetAllNotesByUserName(String username)
     {        
         DatabaseContext c = Connection.Get();
 
-        return c.Notes.ToList<Note>().Where(u => u.User.Name == username).ToList();
+        return c.Notes.Where(u => u.User.Name == username).ToList();
     }
 
     public Note? AddNote(String title, String contents)

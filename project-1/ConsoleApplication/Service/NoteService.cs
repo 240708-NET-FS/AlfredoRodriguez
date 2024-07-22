@@ -12,16 +12,16 @@ public class NoteService
         Screen = Screen.GetInstance();
     }
 
-    // Retrieves notes and displays them
+    // Retrieves notes and displays them.
     public void PrintNotes(String user)
     {
-        // Get all the notes for this user
+        // Get all the notes for this user.
         List<Note>? notes = NoteDAO.GetAllNotesByUserName(user);
 
         // If no notes, then inform the user.
-        if(notes is null)
+        if(notes is null || notes.Count == 0)
         {
-            Screen.UpdateScreenContent(["You have no notes currently.", "Try the [ new ] command to enter the text editor."]);
+            Screen.UpdateScreenContent(["Empty.", "", "", "Try: new [note_title]"],[ConsoleColor.DarkGray]);
             return;
         }
 
@@ -33,7 +33,7 @@ public class NoteService
         // Then, for each note we create an array that contains the note info in a readable way.
         for(int i = 0; i < notesArray.Length; i++)
         {
-            notesArray[i] = $"{notes[i].Id} - {notes[i].Title}";
+            notesArray[i] = $"[{notes[i].Id}] {notes[i].Title}";
         }
 
         // Finally, we print that array to the console.

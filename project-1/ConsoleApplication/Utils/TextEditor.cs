@@ -15,16 +15,28 @@ public class TextEditor
         CONTINUE
     };
 
-    public String Title { get; set; } = null!;
+    public String _title { get; set; } = null!;
     private List<char> Text = new List<char>();
     private (int x, int y) ContainerOffset = (2,2);
     private (int w, int h) DynamicContainer;
     private int TextVerticalOffset = 0;
+    private (int x, int y) cursorPos;
 
     public TextEditor(String title, String? text = null!)
     {
-        Title = title;
+        UpdateContainerSize();
+        SetTitle(title);
+        cursorPos = ContainerOffset;
         LoadContentToTextArray(text);
+    }
+
+
+    private void SetTitle(String newTitle)
+    {
+        if(newTitle.Length >= DynamicContainer.w)
+            _title = newTitle.Substring(0,DynamicContainer.w - 2);
+        else
+            _title = newTitle;
     }
 
     private void LoadContentToTextArray(String? text)
@@ -41,7 +53,8 @@ public class TextEditor
         Console.Clear();
 
         // Set cursor's initial position.
-        Console.SetCursorPosition(ContainerOffset.x, ContainerOffset.y);
+        //Console.SetCursorPosition(ContainerOffset.x, ContainerOffset.y);
+        Console.SetCursorPosition(cursorPos.x, cursorPos.y);
 
         // Do initial print.
         UpdateContainerSize();
@@ -74,7 +87,7 @@ public class TextEditor
 
         return (exitCode, new Note
         {
-            Title = Title,
+            Title = _title,
             Content = textString
         });
     }
@@ -154,6 +167,9 @@ public class TextEditor
             // Get input.
             String? input = Console.ReadLine();
 
+            // If there is input, split it into words here.
+            String[]? words = input?.Split(" ");
+
             // Lowe-case it to make sure we properly check for a match.
             if(input != null) input = input.ToLower();
 
@@ -186,10 +202,10 @@ public class TextEditor
                 // Check if we used the rename [new_title] command.
                 if(input != null && input.Contains("rename"))
                 {
-                    String[] words = input.Split();
-                    if(words.Length == 2 && words[0].Equals("rename"))
+                    //String[] words = input.Split();
+                    if(words!.Length == 2 && words[0].ToLower().Equals("rename"))
                     {
-                        Title = words[1];
+                        SetTitle(words[1]);
                         done = true;
                         break;
                     }
@@ -202,18 +218,22 @@ public class TextEditor
 
         // Put cursor back to its original place.
         Console.ResetColor();
-        Console.SetCursorPosition(cursorOriginalPos.x, cursorOriginalPos.y);
+        //Console.SetCursorPosition(cursorOriginalPos.x, cursorOriginalPos.y);
+        Console.SetCursorPosition(cursorPos.x, cursorPos.y);
 
         return exitCode;
     }
 
     private void PrintToCommandModeErrorLine(String message)
     {
+        (int x, int y) cursorOriginalPos = Console.GetCursorPosition();
         Console.ResetColor();
         Console.SetCursorPosition(0 + ContainerOffset.x, ContainerOffset.y + DynamicContainer.h - 2);
         Console.ForegroundColor = ConsoleColor.Red;
         System.Console.Write(message);
         Console.ResetColor();
+        //Console.SetCursorPosition(cursorOriginalPos.x, cursorOriginalPos.y);
+        Console.SetCursorPosition(cursorPos.x, cursorPos.y);
     }
 
     // Defines to move over the text via the arrow keys.
@@ -315,8 +335,10 @@ public class TextEditor
 
 
         // Convert the final position in container space to console space and set the cursor position to it.
-        (int x, int y) consoleSpace = FromContainerToConsole(newPosContainerSpace);
-        Console.SetCursorPosition(consoleSpace.x, consoleSpace.y);
+        //(int x, int y) consoleSpace = FromContainerToConsole(newPosContainerSpace);
+        cursorPos = FromContainerToConsole(newPosContainerSpace);
+        //Console.SetCursorPosition(consoleSpace.x, consoleSpace.y);
+        Console.SetCursorPosition(cursorPos.x, cursorPos.y);
     }
 
     private (int x, int y) FromArrayToContainer(int index)
@@ -397,17 +419,14 @@ public class TextEditor
     // that it can fit on the container rectangle.
     public void PrintText()
     {
-        // Prints the header with the title.
-
-        if(Text.Count == 0) return;
-
-        // record cursor position before starting.
-        (int x, int y) pos = Console.GetCursorPosition();
-
         // Clear the console to avoid ghosting.
         Console.Clear();
 
         PrintHeader();
+        Console.SetCursorPosition(ContainerOffset.x, ContainerOffset.y);
+
+        // Prints the header with the title.
+        if(Text.Count == 0) return;
 
         // Container width.
         int w = DynamicContainer.w;
@@ -415,7 +434,8 @@ public class TextEditor
         // For each line...
         // It also runs if the line it not completely filled with characters: ((y_row + 1) % Text.Count == 0 ? 0 : 1)
         // Takes TextVerticalOffset into consideration.
-        for(int y_row = TextVerticalOffset; y_row < + (Text.Count / w) + ((y_row + 1) % Text.Count == 0 ? 0 : 1) && y_row - TextVerticalOffset < DynamicContainer.h; y_row++)
+        int moduloFirst = Text.Count > 0 ? 1 : 0;
+        for(int y_row = TextVerticalOffset; y_row < (Text.Count / w) + ((y_row + 1) % Text.Count == 0 ? moduloFirst : 1) && y_row - TextVerticalOffset < DynamicContainer.h; y_row++)
         {
             Console.SetCursorPosition(ContainerOffset.x, ContainerOffset.y + y_row - TextVerticalOffset);
 
@@ -427,10 +447,9 @@ public class TextEditor
         }
 
 
-
         // put cursor back in place.
-        Console.SetCursorPosition(pos.x, pos.y);
-
+        //Console.SetCursorPosition(pos.x, pos.y);
+        Console.SetCursorPosition(cursorPos.x, cursorPos.y);
     }
 
     private void PrintHeader()
@@ -446,10 +465,10 @@ public class TextEditor
         }
 
         // Position cursor into palce to start printing the title.
-        Console.SetCursorPosition(ContainerOffset.x + DynamicContainer.w / 2 - Title.Length / 2, ContainerOffset.y - 1);
+        Console.SetCursorPosition(ContainerOffset.x + DynamicContainer.w / 2 - _title.Length / 2, ContainerOffset.y - 1);
 
         Console.ForegroundColor = ConsoleColor.Black;
-        Console.Write(Title);
+        Console.Write(_title);
 
         Console.ResetColor();
     }

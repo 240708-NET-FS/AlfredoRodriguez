@@ -37,10 +37,13 @@ public partial class Controller
     public int NotesNew(String[] args)
     {
         // Validate input.
-        if(ValidateInput("NEW", ["note_title"], args)) return -1;
+        if(!ValidateInput("NEW", ["note_title"], args)) return -1;
 
         // Create note.
         NoteService.CreateNote(args[0]);
+
+        // Print the list of notes.
+        NotesNotes([]);
 
         return 1;
     }
@@ -57,6 +60,8 @@ public partial class Controller
         // Open note.
         NoteService.OpenNote(args[0]);
 
+        // Print the list of notes.
+        NotesNotes([]);
         return 1;
     }
 }
