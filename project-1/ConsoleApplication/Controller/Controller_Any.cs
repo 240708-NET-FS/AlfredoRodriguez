@@ -33,8 +33,7 @@ public partial class Controller
     public int Logout(String[] args)
     {
         // Validate input.
-        int validationCheck = ValidateInput("LOGOUT", [], args);
-        if(validationCheck != 1) return validationCheck;
+        if(!ValidateInput("LOGOUT", [], args)) return -1;
 
         // Log user out.
         UserService.LogoutUser();
@@ -67,8 +66,7 @@ public partial class Controller
     public int Help(String[] args)
     {
         // Validate input.
-        int validationCheck = ValidateInput("HELP", [], args);
-        if(validationCheck != 1) return validationCheck;
+        if(!ValidateInput("HELP", [], args)) return -1;
 
         // Print commands.
         ConsoleScreen.PrintCommands();
@@ -82,8 +80,7 @@ public partial class Controller
     public int Exit(String[] args)
     {
         // Validate input.
-        int validationCheck = ValidateInput("EXIT", [], args);
-        if(validationCheck != 1) return validationCheck;
+        if(!ValidateInput("EXIT", [], args)) return -1;
 
         // Signal to the program loop that we want to exit the application.
         return 0;
@@ -98,8 +95,7 @@ public partial class Controller
     public int Home(String[] args)
     {
         // Validate input.
-        int validationCheck = ValidateInput("HOME", [], args);
-        if(validationCheck != 1) return validationCheck;
+        if(!ValidateInput("HOME", [], args)) return -1;
 
         // Call HOME's context entry point.
         return HomeHome(args);

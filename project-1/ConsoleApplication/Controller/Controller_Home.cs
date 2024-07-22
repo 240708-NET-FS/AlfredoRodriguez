@@ -15,8 +15,7 @@ public partial class Controller
     public int HomeHome(String[] args)
     {
         // Validate input.
-        int validationCheck = ValidateInput("HOME", [], args);
-        if(validationCheck != 1) return validationCheck;
+        if(!ValidateInput("HOME", [], args)) return -1;
 
         // Set context to HOME.
         Session.GetInstance().CommandContext = Command.CommandContext.HOME;
@@ -45,9 +44,7 @@ public partial class Controller
     public int Register(String[] args)
     {
         // Validate input.
-        int validationCheck = ValidateInput("REGISTER", ["username", "password"], args);
-        if(validationCheck != 1) return validationCheck;
-
+        if(!ValidateInput("REGISTER", ["username", "password"], args)) return -1;
 
         String name = args[0];
         String password = args[1];
@@ -65,8 +62,7 @@ public partial class Controller
     public int Notes(String[] args)
     {
         // Validate input.
-        int validationCheck = ValidateInput("NOTES", [], args);
-        if(validationCheck != 1) return validationCheck;
+        if(!ValidateInput("NOTES", [], args)) return -1;
 
         // Enter the NOTES context.
         return NotesNotes([]);
@@ -79,8 +75,7 @@ public partial class Controller
     public int DeleteAccount(String[] args)
     {
         // Validate input.
-        int validationCheck = ValidateInput("DELETEME", [], args);
-        if(validationCheck != 1) return validationCheck;
+        if(ValidateInput("DELETEME", [], args)) return -1;
 
         // Attempt to delete the account.
         UserService.DeleteAccount();
@@ -95,8 +90,7 @@ public partial class Controller
     public int Login(String[] args)
     {
         // Validate input.
-        int validationCheck = ValidateInput("LOGIN", ["username", "password"], args);
-        if(validationCheck != 1) return validationCheck;
+        if(!ValidateInput("LOGIN", ["username", "password"], args)) return -1;
 
         String name = args[0];
         String password = args[1];

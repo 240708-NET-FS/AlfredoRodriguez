@@ -9,11 +9,13 @@ public partial class Controller
     private UserService UserService = new UserService();
 
     // Validates input, takes care of informing the user if the input is incorrect.
-    private int ValidateInput(String command, String[] expected, String[]? provided)
+    // Returns:
+    // 1 if pass
+    private bool ValidateInput(String command, String[] expected, String[]? provided)
     {
         if(provided is null) provided = [];
 
-        if(provided.Length == expected.Length) return 1;
+        if(provided.Length == expected.Length) return true;
 
         command = command.ToUpper();
         String infoLine = $"{(expected.Length > provided.Length ? "Insuficient" : "Too many")} arguments provided for the {command} command:";
@@ -53,6 +55,8 @@ public partial class Controller
         String[] fullMessage = [infoLine, errorLine];
         fullMessage = fullMessage.Concat(messageLines).ToArray<String>();
 
-        return Error(fullMessage);
+        Error(fullMessage);
+        
+        return false;
     }
 }

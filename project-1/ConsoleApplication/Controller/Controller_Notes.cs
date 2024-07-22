@@ -13,8 +13,7 @@ public partial class Controller
     public int NotesNotes(String[] args)
     {
         // Validate input.
-        int validationCheck = ValidateInput("NOTES", [], args);
-        if(validationCheck != 1) return validationCheck;
+        if(!ValidateInput("NOTES", [], args)) return -1;
 
         // Get the user.
         String? user = Session.GetInstance().User?.Name;
@@ -38,8 +37,7 @@ public partial class Controller
     public int NotesNew(String[] args)
     {
         // Validate input.
-        int validationCheck = ValidateInput("NEW", ["note_title"], args);
-        if(validationCheck != 1) return validationCheck;
+        if(ValidateInput("NEW", ["note_title"], args)) return -1;
 
         // Create note.
         NoteService.CreateNote(args[0]);
@@ -54,8 +52,7 @@ public partial class Controller
     public int NotesOpen(String[] args)
     {
         // Validate input.
-        int validationCheck = ValidateInput("OPEN", ["note_title"], args);
-        if(validationCheck != 1) return validationCheck;
+        if(!ValidateInput("OPEN", ["note_title"], args)) return -1;
 
         // Open note.
         NoteService.OpenNote(args[0]);
