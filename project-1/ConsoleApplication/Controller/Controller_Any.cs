@@ -3,10 +3,11 @@ namespace Program.ApplicationController;
 using Program.Utils;
 
 
-// This second part of the class defines.
-// method handlers made for pagination commands.
+// Contains commands that can be accessed trough any command context.
+// Global connext commands can set the command context at will.
 public partial class Controller
 {
+    // Move to the next page of the content, if any.
     [Command(context:Command.CommandContext.ANY, name:">", description:
     @"[C]> <
     [E]Call those two to navigate pages on the console when availible.")]
@@ -16,6 +17,7 @@ public partial class Controller
         return 1;
     }
 
+    // Move to the previous page of the content, if any.
     [Command(context:Command.CommandContext.ANY, name:"<")]
     public int Previous(String[] args)
     {
@@ -23,92 +25,95 @@ public partial class Controller
         return 1;
     }
 
+    // Logs the user out.
+    // This is a HOME contex's entry command.
     [Command(context:Command.CommandContext.ANY, name:"LOGOUT", description:
     @"[C]logout
     [E]Logs you out.")]
     public int Logout(String[] args)
     {
-        // Check that args count is exactly 0.
-        if(args.Length != 0) return Error([$"The [ logout ] command doesn't take any extra arguments."]);
+        // Validate input.
+        int validationCheck = ValidateInput("LOGOUT", [], args);
+        if(validationCheck != 1) return validationCheck;
 
+        // Log user out.
         UserService.LogoutUser();
 
-        // Enter the HOME context
+        // Enter the HOME context.
         Session.GetInstance().CommandContext = Command.CommandContext.HOME;
         return 1;
     }
 
-    // Displays an error on the console
+    // Prints a message to the console in error format.
     [Command(context:Command.CommandContext.ANY, name:"ERROR", description:
     @"[C]error
     [E]Thrown when an error occurs. You can also call it and type something if you are bored, it will throw that message back.")]
     public int Error(String[] msg)
     {
-        // We get all the error strings from the message and combine then into one.
-        String errorMessage = "";
-        foreach (String s in msg)
-        {
-            errorMessage += s + " ";
-        }
-
-        if(errorMessage.Length == 0)
-        {
-            errorMessage = "Error. Type [ Help ] for a list of commands.";
-        }
+        String[] err = ["Error"];
+        err = err.Concat(msg).ToArray<String>();
 
         // Print the error
-        ConsoleScreen.UpdateScreenContent([$"> {errorMessage}"], [ConsoleColor.Red], false);
+        ConsoleScreen.UpdateScreenContent(err, [ConsoleColor.Red], false);
         ConsoleScreen.PrintScreen(Screen.InputState.ALLOWED);
 
         return -1;
     }
 
+    // Prints out all commands for the current command context.
     [Command(context:Command.CommandContext.ANY, name:"HELP", description:
     @"[C]help
     [E]Prints out all availible commands.")]
     public int Help(String[] args)
     {
+        // Validate input.
+        int validationCheck = ValidateInput("HELP", [], args);
+        if(validationCheck != 1) return validationCheck;
+
+        // Print commands.
         ConsoleScreen.PrintCommands();
         return 1;
     }
 
+    // Exits the application.
     [Command(context:Command.CommandContext.ANY, name:"EXIT", description:
     @"[C]exit
     [E]Exits the application.")]
     public int Exit(String[] args)
     {
+        // Validate input.
+        int validationCheck = ValidateInput("EXIT", [], args);
+        if(validationCheck != 1) return validationCheck;
+
+        // Signal to the program loop that we want to exit the application.
         return 0;
     }
 
 
-    // This is the HOME contex's entry command.
+    // Takes the user to the HOME command context.
+    // This is a HOME contex's entry command.
     [Command(context:Command.CommandContext.ANY, name:"HOME", description:
     @"[C]home
     [E]Takes you to the home context.")]
     public int Home(String[] args)
     {
-        Session.GetInstance().CommandContext = Command.CommandContext.HOME;
+        // Validate input.
+        int validationCheck = ValidateInput("HOME", [], args);
+        if(validationCheck != 1) return validationCheck;
 
-        String? user = Session.GetInstance().User?.Name;
-
-        if(user is null)
-        {
-            return Welcome();
-        }
-
-        ConsoleScreen.UpdateScreenContent
-        ([
-            $"Welcome {user}.",
-            "",
-            "Type [ help ] for a list of commands."
-        ]);
-        return 1;
+        // Call HOME's context entry point.
+        return HomeHome(args);
     }
 
+    // Prints a Welcome screen.
+    // This command is not availible to the user.
+    // This is a HOME contex's entry command.
     public int Welcome()
     {
+        // Set command context to HOME.
         Session.GetInstance().CommandContext = Command.CommandContext.HOME;
 
+        // Print Welcome screen.
         ConsoleScreen.UpdateScreenContent
         ([
             "Welcome to CloudNotes.",
@@ -121,6 +126,5 @@ public partial class Controller
         
         return 0;
     }
-
 
 }
