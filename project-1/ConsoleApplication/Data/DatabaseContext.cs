@@ -8,7 +8,7 @@ using Program.Model;
 public class DatabaseContext : DbContext
 {
     public DbSet<User> Users { get; set; } = null!;
-    public DbSet<Note> Todos { get; set; } = null!;
+    public DbSet<Note> Notes { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

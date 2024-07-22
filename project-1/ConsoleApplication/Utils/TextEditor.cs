@@ -1,17 +1,29 @@
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using Program.Model;
+using Program.Utils;
 
 public class TextEditor
 {
+    public enum ExitCode
+    {
+        EXIT,
+        SAVE,
+        SAVE_AND_EXIT,
+        CONTINUE
+    };
+
     public String Title { get; set; } = null!;
     private List<char> Text = new List<char>();
-    private (int x, int y) ContainerOffset = (1,1);
+    private (int x, int y) ContainerOffset = (2,2);
     private (int w, int h) DynamicContainer;
     private int TextVerticalOffset = 0;
 
-    public TextEditor(String title, String text)
+    public TextEditor(String title, String? text = null!)
     {
+        Title = title;
         LoadContentToTextArray(text);
     }
 
@@ -24,7 +36,7 @@ public class TextEditor
         }
     }
 
-    public void Run()
+    public (ExitCode, Note) Run(String? message = null!)
     {
         Console.Clear();
 
@@ -35,18 +47,36 @@ public class TextEditor
         UpdateContainerSize();
         PrintText();
 
+        // Print any message from the caller if any.
+        if(message != null)
+            PrintToCommandModeErrorLine(message);
+
+        ExitCode exitCode = ExitCode.CONTINUE;
+        ConsoleKeyInfo input;
         // Run as long as we dont hit the Escape key.
-        for(ConsoleKeyInfo input = Console.ReadKey(true); input.Key != ConsoleKey.Escape; input = Console.ReadKey(true))
+        while(exitCode == ExitCode.CONTINUE)
         {
+            input = Console.ReadKey(true);
+
             // Updates the container's dimensions based on the current state of the console.
             UpdateContainerSize();
 
             // Process input.
-            ProcessInput(input);
+            exitCode = ProcessInput(input);
 
             // Print the latest state of the text.
             PrintText();
         }
+
+        String textString = "";
+
+        foreach(char c in Text) textString += c;
+
+        return (exitCode, new Note
+        {
+            Title = Title,
+            Content = textString
+        });
     }
 
     private void UpdateContainerSize()
@@ -56,7 +86,7 @@ public class TextEditor
         // This keeps the container update after a console window's resize.
         DynamicContainer = (40, 10);
 
-/*         // The console has changed shapes, so we will reposition the cursor based on its last position on the text array.
+        /*// The console has changed shapes, so we will reposition the cursor based on its last position on the text array.
         if(DynamicContainer.w != oldValues.w || DynamicContainer.h != oldValues.h)
         {
 
@@ -76,13 +106,15 @@ public class TextEditor
     }
 
     // Parse input and call appropiate methods
-    private void ProcessInput(ConsoleKeyInfo keyInfo)
+    private ExitCode ProcessInput(ConsoleKeyInfo keyInfo)
     {
         switch (keyInfo.Key)
         {
             // We will not implement enter fow now.
             case ConsoleKey.Enter:
-                return;
+                break;
+            case ConsoleKey.Escape:
+                return CommandMode();
             case ConsoleKey.UpArrow:
             case ConsoleKey.DownArrow:
             case ConsoleKey.RightArrow:
@@ -96,6 +128,92 @@ public class TextEditor
                 AddCharacter(keyInfo.KeyChar);
                 break;
         }
+
+        return ExitCode.CONTINUE;
+    }
+
+    // This here allows us to
+    private ExitCode CommandMode()
+    {
+        ExitCode exitCode = ExitCode.CONTINUE;
+        // record cursor's original position
+        (int x, int y) cursorOriginalPos = Console.GetCursorPosition();
+
+        bool done = false;
+        // start command mode loop
+        while(!done)
+        {
+            // Clear the command line
+            Console.SetCursorPosition(0 + ContainerOffset.x, ContainerOffset.y + DynamicContainer.h - 1);
+            Console.BackgroundColor = ConsoleColor.Black;
+            for(int i = 0; i < DynamicContainer.w; i++) Console.Write(" ");
+
+            // position cursor in the command line (last line)
+            Console.SetCursorPosition(0 + ContainerOffset.x, ContainerOffset.y + DynamicContainer.h - 1);
+            System.Console.Write(">>> ");
+            // Get input.
+            String? input = Console.ReadLine();
+
+            // Lowe-case it to make sure we properly check for a match.
+            if(input != null) input = input.ToLower();
+
+            // Based on the input, throw the corresponding context.
+            switch(input)
+            {
+                case "save":
+                exitCode = ExitCode.SAVE;
+                done = true;
+                PrintToCommandModeErrorLine("Saving to the cloud...");
+                break;
+
+                case "exit save":
+                case "save exit":
+                exitCode = ExitCode.SAVE_AND_EXIT;
+                done = true;
+                break;
+
+                case "exit":
+                exitCode = ExitCode.EXIT;
+                done = true;
+                break;
+
+                case "back":
+                exitCode = ExitCode.CONTINUE;
+                done = true;
+                break;
+
+                default:
+                // Check if we used the rename [new_title] command.
+                if(input != null && input.Contains("rename"))
+                {
+                    String[] words = input.Split();
+                    if(words.Length == 2 && words[0].Equals("rename"))
+                    {
+                        Title = words[1];
+                        done = true;
+                        break;
+                    }
+                }
+
+                PrintToCommandModeErrorLine("Commands: save, exit, back and rename [new_title].");
+                break;
+            }
+        }
+
+        // Put cursor back to its original place.
+        Console.ResetColor();
+        Console.SetCursorPosition(cursorOriginalPos.x, cursorOriginalPos.y);
+
+        return exitCode;
+    }
+
+    private void PrintToCommandModeErrorLine(String message)
+    {
+        Console.ResetColor();
+        Console.SetCursorPosition(0 + ContainerOffset.x, ContainerOffset.y + DynamicContainer.h - 2);
+        Console.ForegroundColor = ConsoleColor.Red;
+        System.Console.Write(message);
+        Console.ResetColor();
     }
 
     // Defines to move over the text via the arrow keys.
@@ -279,6 +397,8 @@ public class TextEditor
     // that it can fit on the container rectangle.
     public void PrintText()
     {
+        // Prints the header with the title.
+
         if(Text.Count == 0) return;
 
         // record cursor position before starting.
@@ -286,6 +406,8 @@ public class TextEditor
 
         // Clear the console to avoid ghosting.
         Console.Clear();
+
+        PrintHeader();
 
         // Container width.
         int w = DynamicContainer.w;
@@ -304,7 +426,31 @@ public class TextEditor
             }
         }
 
+
+
         // put cursor back in place.
         Console.SetCursorPosition(pos.x, pos.y);
+
+    }
+
+    private void PrintHeader()
+    {
+        Console.SetCursorPosition(ContainerOffset.x, ContainerOffset.y - 1);
+ 
+        Console.BackgroundColor = ConsoleColor.Gray;
+
+        // Draw a white line
+        for(int i = 0; i < DynamicContainer.w; i++)
+        {
+            Console.Write(" ");
+        }
+
+        // Position cursor into palce to start printing the title.
+        Console.SetCursorPosition(ContainerOffset.x + DynamicContainer.w / 2 - Title.Length / 2, ContainerOffset.y - 1);
+
+        Console.ForegroundColor = ConsoleColor.Black;
+        Console.Write(Title);
+
+        Console.ResetColor();
     }
 }

@@ -1,3 +1,5 @@
+using Program.Model;
+
 namespace Program.Utils;
 
 // Holds data about the current session.
@@ -5,7 +7,7 @@ public class Session
 {
     // Fields
     private static Session SessionInstance = null!;
-    public String? User { get; set; } = null;
+    public User? User { get; set; } = null;
     public Command.CommandContext CommandContext { get; set; } = Command.CommandContext.HOME;
 
     // Singleton

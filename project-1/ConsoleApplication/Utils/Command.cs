@@ -7,7 +7,7 @@ public class Command : Attribute
     public enum CommandContext
     {
         HOME,
-        NOTE,
+        NOTES,
         ANY,
         EXIT
     };

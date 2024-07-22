@@ -159,7 +159,7 @@ class Screen
     {
         Console.ResetColor();
 
-        String? userName = Session.GetInstance().User;
+        String? userName = Session.GetInstance().User?.Name;
         bool isOnline = Session.GetInstance().User != null;
         String status = isOnline ? "LOGGED IN" : "NOT LOGGED IN";
 

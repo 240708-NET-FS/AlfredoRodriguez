@@ -44,30 +44,15 @@ public partial class Controller
         return 1;
     }
 
-    [Command(name:"NOTE", description:
-    @"[C]note
-    [E]Takes you to the note context. Once there type help to explore its commands.")]
-    public int Note(String[] args)
+    [Command(name:"NOTES", description:
+    @"[C]notes
+    [E]Takes you to the NOTES context. Once there type help to explore its commands.")]
+    public int Notes(String[] args)
     {
-        Session.GetInstance().CommandContext = Command.CommandContext.NOTE;
+        if(args.Length > 0) return Error(["The [ notes ] command doesnt take any extra arguments"]);
 
-        ConsoleScreen.UpdateScreenContent(["Note context", "Type help to see [ note ] commands."]);
-
-        return 1;
-    }
-
-    [Command(name:"EDITOR", description:
-    @"[C]editor
-    [E]Starts the text editor.")]
-    public int Editor(String[] args)
-    {
-        //Session.GetInstance().CommandContext = Command.CommandContext.NOTE;
-        TextEditor editor = new TextEditor("Temp", null);
-        editor.Run();
-
-        ConsoleScreen.UpdateScreenContent(["Note context", "Type help to see [ note ] commands."]);
-
-        return 1;
+        // Enter the NOTES context.
+        return NotesNotes([]);
     }
 
     [Command(name:"DELETEME", description:

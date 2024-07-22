@@ -57,10 +57,10 @@ public partial class Controller
         }
 
         // Print the error
-
         ConsoleScreen.UpdateScreenContent([$"> {errorMessage}"], [ConsoleColor.Red], false);
         ConsoleScreen.PrintScreen(Screen.InputState.ALLOWED);
-        return 1;
+
+        return -1;
     }
 
     [Command(context:Command.CommandContext.ANY, name:"HELP", description:
@@ -81,13 +81,27 @@ public partial class Controller
     }
 
 
+    // This is the HOME contex's entry command.
     [Command(context:Command.CommandContext.ANY, name:"HOME", description:
     @"[C]home
     [E]Takes you to the home context.")]
     public int Home(String[] args)
     {
-        ConsoleScreen.UpdateScreenContent(["You are now on the HOME context."]);
         Session.GetInstance().CommandContext = Command.CommandContext.HOME;
+
+        String? user = Session.GetInstance().User?.Name;
+
+        if(user is null)
+        {
+            return Welcome();
+        }
+
+        ConsoleScreen.UpdateScreenContent
+        ([
+            $"Welcome {user}.",
+            "",
+            "Type [ help ] for a list of commands."
+        ]);
         return 1;
     }
 
@@ -97,11 +111,12 @@ public partial class Controller
 
         ConsoleScreen.UpdateScreenContent
         ([
-            "Welcome.",
+            "Welcome to CloudNotes.",
             "",
             "",
-            "Login with -> login [username] [password]",
-            "Register with -> register [username] [password]"
+            "Login: login [username] [password]",
+            "Register: register [username] [password]",
+            "More: help",
         ]);
         
         return 0;

@@ -25,7 +25,7 @@ public class UserService
 
     public void DeleteAccount()
     {
-        String? userName = Session.GetInstance().User;
+        String? userName = Session.GetInstance().User?.Name;
 
         // Check if the user is logged in.
         if(userName == null)
@@ -154,7 +154,7 @@ public class UserService
         }
 
         // Record that the user is logged in.
-        Session.GetInstance().User = name;
+        Session.GetInstance().User = user;
 
         Screen.UpdateScreenContent(["Logged in."]);
     }
