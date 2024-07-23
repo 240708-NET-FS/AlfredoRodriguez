@@ -8,7 +8,8 @@ using Program.Utils;
 public partial class Controller
 {
 
-    // Attempts to register a new user.
+    // ENTRY POINT for HOME context
+    // Displays the home screen.
     [Command(context:Command.CommandContext.ANY, name:"HOME", description:
     @"[C]home
     [E]Takes you to the home context.")]

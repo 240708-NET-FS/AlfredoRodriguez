@@ -8,8 +8,6 @@ using Program.Model;
 public partial class Controller
 {
    
-
-
     // Attempts to register a new user.
     [Command(name:"REGISTER", description:
     @"[C]register [username] [password]

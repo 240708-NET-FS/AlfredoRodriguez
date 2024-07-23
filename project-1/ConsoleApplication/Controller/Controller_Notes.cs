@@ -6,7 +6,8 @@ using Program.Utils;
 public partial class Controller
 {
     
-    // ENTRY POINT
+    // ENTRY POINT for the NOTES context.
+    // Displays the user's notes.
     [Command(context:Command.CommandContext.NOTES, name:"NOTES", description:
     @"[C]notes
     [E]Displays all of user's notes.")]
