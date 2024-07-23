@@ -22,12 +22,20 @@ public class DatabaseContext : DbContext
         optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), sqlOptions => {
 
             // The line below Allows me to retry on failure.
-            // Basically this handles any SQL exception thrown due to a "transient failure", which involve:
-            // Database timeout (this happens to me every time I try to interact with the DB after not having done so in a while)
-            // Network issues (connection lost or interrupted)
-            // Service unavailability (any temporal error happening on the Azure side)
-            // Rate limiting (Hitting a temporary rate limit imposed by Azure, if any. I imagine our trial accounts have those.)
-            sqlOptions.EnableRetryOnFailure();
+            // Basically allows me to handle SQL exceptions by retrying.
+            // The ones I want to handle I must specify them via the 'errorNumbersToAdd' array.
+            // Since I want to re-try whenever a "transitient error" occurs (an error that is temporairly and can potentially be solved via a new try)
+            // then I will add the following error codes:
+            // -2       Timeout Expired: (this happens to me every time I try to interact with the DB after not having done so in a while)
+            // 4060     Login Failed
+            // 40197    Service error while processing request
+            // 40613    DB not currently available
+            // 40501    Service is busy.
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 2,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: new int[]{-2, 4060, 40197, 40501, 40613}
+            );
         });
     }
 
