@@ -19,7 +19,16 @@ public class DatabaseContext : DbContext
         .Build();
 
         // Tell the DbContext where to find the connection string.
-        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), sqlOptions => {
+
+            // The line below Allows me to retry on failure.
+            // Basically this handles any SQL exception thrown due to a "transient failure", which involve:
+            // Database timeout (this happens to me every time I try to interact with the DB after not having done so in a while)
+            // Network issues (connection lost or interrupted)
+            // Service unavailability (any temporal error happening on the Azure side)
+            // Rate limiting (Hitting a temporary rate limit imposed by Azure, if any. I imagine our trial accounts have those.)
+            sqlOptions.EnableRetryOnFailure();
+        });
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
