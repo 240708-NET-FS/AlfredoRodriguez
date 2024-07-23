@@ -14,7 +14,6 @@ public class UserDAO
         // TODO: EXCEPTIONS
         if(GetUserByName(u.Name) != null) return null;
 
-        // Add user
         c.Add<User>(u);
         c.SaveChanges();
 
@@ -28,10 +27,10 @@ public class UserDAO
 
         User? toRemove = GetUserByName(u.Name);
 
-        // If the user name is incorrect, return null
+        // If the user name is incorrect, return null.
         if(toRemove == null) return null;
 
-        // if the password doesnt match, return null
+        // if the password doesnt match, return null.
         if(!toRemove.Password.Contains(u.Password)) return null;
 
         // Remove user.
@@ -42,7 +41,7 @@ public class UserDAO
     }
 
 
-    // Retrieves a user by name, null if none found
+    // Retrieves a user by name, null if none found.
     public User? GetUserByName(string name)
     {
         DatabaseContext c = Connection.Get();

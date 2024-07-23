@@ -107,7 +107,7 @@ public class NoteService
                 // If the note is a new note, then create a new record with it.
                 if(note.User == null)
                 {
-                    note = NoteDAO.AddNote(note.Title, note.Content!)!;
+                    note = NoteDAO.AddNote(note.Title, note.Content!, Session.GetInstance().User!)!;
 
                     if(note is null)
                     {

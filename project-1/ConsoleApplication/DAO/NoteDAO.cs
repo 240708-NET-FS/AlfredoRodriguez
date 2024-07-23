@@ -5,6 +5,7 @@ using Program.Utils;
 namespace Program.DAO;
 public class NoteDAO
 {
+    // Retrieves all the notes of a given user.
     public List<Note> GetAllNotesByUserName(String username)
     {        
         DatabaseContext c = Connection.Get();
@@ -12,18 +13,17 @@ public class NoteDAO
         return c.Notes.Where(u => u.User.Name == username).ToList();
     }
 
-    public Note? AddNote(String title, String contents)
+    // Adds a note for the given user.
+    public Note? AddNote(String title, String contents, User user)
     {
-
         // The only requirement we have for adding a note is that it needs to have a title.
-        if(title == null || title.Length == 0) return null;
+        if(title == null || title.Length == 0 || user is null) return null;
 
         DatabaseContext c = Connection.Get();
 
-        Note newNote = new Note{Title = title, Content = contents, User = Session.GetInstance().User!};
+        Note newNote = new Note{Title = title, Content = contents, User = user};
 
         c.Notes.Add(newNote);
-
         c.SaveChanges();
 
         return newNote;
@@ -45,7 +45,7 @@ public class NoteDAO
         return c.Notes.FirstOrDefault<Note>(n => n.Title == noteTitle);
     }
 
-    // Attempts to update a note by Id
+    // Attempts to update a note by Id.
     public Note? UpdateNote(Note note)
     {
         // The only requirement we have for adding a note is that it needs to have a title.
@@ -54,7 +54,6 @@ public class NoteDAO
         DatabaseContext c = Connection.Get();
 
         c.Notes.Update(note);
-
         c.SaveChanges();
 
         return note;
