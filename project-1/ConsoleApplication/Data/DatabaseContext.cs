@@ -21,11 +21,7 @@ public class DatabaseContext : DbContext
         // Tell the DbContext where to find the connection string.
         optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), sqlOptions => {
 
-            // The line below Allows me to retry on failure.
-            // Basically allows me to handle SQL exceptions by retrying.
-            // The ones I want to handle I must specify them via the 'errorNumbersToAdd' array.
-            // Since I want to re-try whenever a "transitient error" occurs (an error that is temporairly and can potentially be solved via a new try)
-            // then I will add the following error codes:
+            // Re-try whenever one of the following "transitient error" occurs (an error that is temporairly and can potentially be solved via a new try)
             // -2       Timeout Expired: (this happens to me every time I try to interact with the DB after not having done so in a while)
             // 4060     Login Failed
             // 40197    Service error while processing request

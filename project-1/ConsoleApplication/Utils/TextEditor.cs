@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -7,6 +8,7 @@ using Program.Utils;
 
 public class TextEditor
 {
+    // Exit codes for the Run method.
     public enum ExitCode
     {
         EXIT,
@@ -15,49 +17,79 @@ public class TextEditor
         CONTINUE
     };
 
-    public String _title { get; set; } = null!;
-    private List<char> Text = new List<char>();
-    private (int x, int y) ContainerOffset = (2,2);
-    private (int w, int h) DynamicContainer;
-    private int TextVerticalOffset = 0;
+    // Contains the note's title
+    private String _title = null!;
+    public String Title
+    {
+        get => _title;
+        set
+        {
+            // Makes sure the title doen't go over length limit we support.
+            // If it does, we cut the extra.
+            if(value.Length >= Container.w)
+                _title = value.Substring(0,Container.w - 2);
+            else
+                _title = value;
+        }
+    }
+    // Contains the note's text.
+    private List<char> _text = new List<char>();
+    public List<char> Text
+    {
+        get => _text;
+    }
+    // Contains the width and height of our note editor container.
+    private (int w, int h) Container;
+    // Contains an offset for our note editor container.
+    private (int x, int y) ContainerOffset;
+    // Contains an offset to be applies to the text when rendering it on the text container.
+    private int TextLineOffset = 0;
+    // Stores the current position of our cursor, in Console space.
     private (int x, int y) cursorPos;
 
+    // We require a title and optionally a text.
     public TextEditor(String title, String? text = null!)
     {
-        UpdateContainerSize();
-        SetTitle(title);
+        SetContainerUp();
+        Title = title;
         cursorPos = ContainerOffset;
-        LoadContentToTextArray(text);
+        LoadText(text);
     }
 
-
-    private void SetTitle(String newTitle)
+    // Here we try to set the container up, making sure we adapt those to the console's dimensions.
+    private void SetContainerUp()
     {
-        if(newTitle.Length >= DynamicContainer.w)
-            _title = newTitle.Substring(0,DynamicContainer.w - 2);
-        else
-            _title = newTitle;
+        // Set container dimensions to 40, 10 if possible, else adjust to console space.
+        Container.w = Console.WindowWidth > 40 ? 40: Console.WindowWidth;
+        // We deduce one from the height becasue we want to make sure we have space for the editor header later on.
+        Container.h = Console.WindowHeight > 10 ? 10: Console.WindowHeight - 1;
+
+        // The container horizonta offset is set up to allows us to center the text editor in the console.
+        ContainerOffset.x = Console.WindowWidth / 2 - Container.w / 2;
+        ContainerOffset.y = 1;
     }
 
-    private void LoadContentToTextArray(String? text)
+    // Loads any given String into the Text list.
+    private void LoadText(String? text)
     {
         if(text == null) return;
+
         foreach (char c in text)
         {
             Text.Add(c);
         }
     }
 
-    public (ExitCode, Note) Run(String? message = null!)
+    // Application loop. Returns an exit code indicating what the user whishes to do.
+    public ExitCode Run(String? message = null!)
     {
         Console.Clear();
 
         // Set cursor's initial position.
-        //Console.SetCursorPosition(ContainerOffset.x, ContainerOffset.y);
         Console.SetCursorPosition(cursorPos.x, cursorPos.y);
 
         // Do initial print.
-        UpdateContainerSize();
+        PrintBackGround();
         PrintText();
 
         // Print any message from the caller if any.
@@ -71,51 +103,45 @@ public class TextEditor
         {
             input = Console.ReadKey(true);
 
-            // Updates the container's dimensions based on the current state of the console.
-            UpdateContainerSize();
-
             // Process input.
             exitCode = ProcessInput(input);
 
             // Print the latest state of the text.
+            Console.Clear();
+            PrintBackGround();
             PrintText();
         }
 
-        String textString = "";
-
-        foreach(char c in Text) textString += c;
-
-        return (exitCode, new Note
-        {
-            Title = _title,
-            Content = textString
-        });
+        return exitCode;
     }
 
-    private void UpdateContainerSize()
+    // Prints the background (and container too)
+    private void PrintBackGround()
     {
-        /* (int w, int h) oldValues = DynamicContainer;
-        int hoveredCharIndex = FromContainerToArrayIndex(FromConsoleToContainer(Console.GetCursorPosition())); */
-        // This keeps the container update after a console window's resize.
-        DynamicContainer = (40, 10);
+        Console.SetCursorPosition(0,0);
 
-        /*// The console has changed shapes, so we will reposition the cursor based on its last position on the text array.
-        if(DynamicContainer.w != oldValues.w || DynamicContainer.h != oldValues.h)
+        // Prints whole console.
+        Console.BackgroundColor = ConsoleColor.Black;
+        char[] bgLine = new char[Console.WindowWidth];
+        for(int i = 0; i < bgLine.Length; i++) bgLine[i] = ' ';
+
+        for(int y = 0; y < Console.WindowHeight - 1; y++)
         {
+            System.Console.WriteLine(new string(bgLine));
+        }
 
-            // find the column where our cursor should be standing at given the new container dimensions.
-            int hoveredRowIndex = hoveredCharIndex / DynamicContainer.w;
+        // Prints container rect.
+        Console.ResetColor();
+        char[] containerLine = new char[Container.w];
+        for(int i = 0; i < containerLine.Length; i++) containerLine[i] = ' ';
 
-            // If that column is hidden up from view due scroll, scroll up to it.
-            if(TextVerticalOffset > hoveredRowIndex) TextVerticalOffset = hoveredRowIndex;
+        for(int y = 0; y < Container.h; y++)
+        {
+            Console.SetCursorPosition(ContainerOffset.x, ContainerOffset.y + y);
+            System.Console.Write(new string(containerLine));
+        }
 
-            // If that column is hidden down from view due scroll, scroll down to it.
-            if(hoveredRowIndex > TextVerticalOffset + DynamicContainer.h) TextVerticalOffset -= hoveredRowIndex - (TextVerticalOffset + DynamicContainer.h);
-
-            // Position the cursor to hover over the desired char again.
-            (int x, int y) newPos = FromArrayToContainer(hoveredCharIndex);
-            Console.SetCursorPosition(newPos.x, newPos.y);
-        } */
+        Console.SetCursorPosition(cursorPos.x, cursorPos.y);
     }
 
     // Parse input and call appropiate methods
@@ -157,12 +183,12 @@ public class TextEditor
         while(!done)
         {
             // Clear the command line
-            Console.SetCursorPosition(0 + ContainerOffset.x, ContainerOffset.y + DynamicContainer.h - 1);
-            Console.BackgroundColor = ConsoleColor.Black;
-            for(int i = 0; i < DynamicContainer.w; i++) Console.Write(" ");
+            Console.SetCursorPosition(0 + ContainerOffset.x, ContainerOffset.y + Container.h - 1);
+            Console.BackgroundColor = ConsoleColor.DarkGray;
+            for(int i = 0; i < Container.w; i++) Console.Write(" ");
 
             // position cursor in the command line (last line)
-            Console.SetCursorPosition(0 + ContainerOffset.x, ContainerOffset.y + DynamicContainer.h - 1);
+            Console.SetCursorPosition(0 + ContainerOffset.x, ContainerOffset.y + Container.h - 1);
             System.Console.Write(">>> ");
             // Get input.
             String? input = Console.ReadLine();
@@ -205,7 +231,8 @@ public class TextEditor
                     //String[] words = input.Split();
                     if(words!.Length == 2 && words[0].ToLower().Equals("rename"))
                     {
-                        SetTitle(words[1]);
+                        //SetTitle(words[1]);
+                        Title = words[1];
                         done = true;
                         break;
                     }
@@ -226,13 +253,11 @@ public class TextEditor
 
     private void PrintToCommandModeErrorLine(String message)
     {
-        (int x, int y) cursorOriginalPos = Console.GetCursorPosition();
         Console.ResetColor();
-        Console.SetCursorPosition(0 + ContainerOffset.x, ContainerOffset.y + DynamicContainer.h - 2);
+        Console.SetCursorPosition(0 + ContainerOffset.x, ContainerOffset.y + Container.h - 2);
         Console.ForegroundColor = ConsoleColor.Red;
         System.Console.Write(message);
         Console.ResetColor();
-        //Console.SetCursorPosition(cursorOriginalPos.x, cursorOriginalPos.y);
         Console.SetCursorPosition(cursorPos.x, cursorPos.y);
     }
 
@@ -258,7 +283,7 @@ public class TextEditor
             {
                 // OOB
                 newPosContainerSpace = pos;
-                MoveText(-1);
+                ScrollText(-1);
             }
             else
             // Move cursor one spot down
@@ -267,11 +292,11 @@ public class TextEditor
 
             case ConsoleKey.DownArrow:
             // If moving down makes the cursor go OOB:
-            if(pos.y + 1 >= DynamicContainer.h)
+            if(pos.y + 1 >= Container.h)
             {
                 // OOB
                 newPosContainerSpace = pos;
-                MoveText(1);
+                ScrollText(1);
             }
             else
             // Move cursor one spot down
@@ -283,16 +308,16 @@ public class TextEditor
             if(pos.x - 1 < 0)
             {
                 // Move cursor one level UP and far RIGHT
-                newPosContainerSpace = (DynamicContainer.w - 1, pos.y - 1);
+                newPosContainerSpace = (Container.w - 1, pos.y - 1);
 
                 // If new position's Y value is OOB
                 if(newPosContainerSpace.y < 0)
                 {
                     // Reposition to be inside the vertical boundaries.
                     // "Position the cursor at (0, 0), unless we have text lines not rendered on top, on such a case position the cursor at (MAX, 0)"
-                    newPosContainerSpace = (TextVerticalOffset > 0 ? DynamicContainer.w - 1 : 0, 0);
+                    newPosContainerSpace = (TextLineOffset > 0 ? Container.w - 1 : 0, 0);
                     // Ask the text to shift UPWARDS
-                    MoveText(-1);
+                    ScrollText(-1);
                 }
             }
             else
@@ -302,18 +327,18 @@ public class TextEditor
 
             case ConsoleKey.RightArrow:
             // If moving right makes the cursor go OOB:
-            if(pos.x + 1 >= DynamicContainer.w)
+            if(pos.x + 1 >= Container.w)
             {
                 // Move cursor one level DOWN and far LEFT
                 newPosContainerSpace = (0, pos.y + 1);
 
                 // If new position's Y value is OOB
-                if(newPosContainerSpace.y >= DynamicContainer.h)
+                if(newPosContainerSpace.y >= Container.h)
                 {
                     // Reposition to be inside the vertical boundaries.
-                    newPosContainerSpace = (0, DynamicContainer.h - 1);
+                    newPosContainerSpace = (0, Container.h - 1);
                     // Ask the text to shift UPWARDS
-                    MoveText(1);
+                    ScrollText(1);
                 }
             }
             else
@@ -330,7 +355,7 @@ public class TextEditor
         // If thew new position would be outside of the text we have (+1), then we dont move. We need to create text.
         if(cursorIndexPosOnArray >= Text.Count)
         {
-            newPosContainerSpace = FromArrayToContainer(Text.Count - (TextVerticalOffset * DynamicContainer.w));
+            newPosContainerSpace = FromArrayToContainer(Text.Count - (TextLineOffset * Container.w));
         }
 
 
@@ -343,7 +368,7 @@ public class TextEditor
 
     private (int x, int y) FromArrayToContainer(int index)
     {
-        return (index - (index / DynamicContainer.w) * DynamicContainer.w, index / DynamicContainer.w);
+        return (index - (index / Container.w) * Container.w, index / Container.w);
     }
 
     private (int x, int y) FromConsoleToContainer((int x, int y) consoleCoords)
@@ -358,18 +383,17 @@ public class TextEditor
 
     private int FromContainerToArrayIndex((int x, int y) containerCoords)
     {
-        return (TextVerticalOffset * DynamicContainer.w) + (containerCoords.y * DynamicContainer.w + containerCoords.x);
+        return (TextLineOffset * Container.w) + (containerCoords.y * Container.w + containerCoords.x);
     }
 
     // given an array pos, return its row position in the text container (0 based).
     private int FromArrayToRowIndex(int arrayPos)
     {
-        return arrayPos - (arrayPos / DynamicContainer.w) * DynamicContainer.w;
+        return arrayPos - (arrayPos / Container.w) * Container.w;
     }
 
     private void AddCharacter(char charToAdd)
     {
-
         // Reject any null char.
         if(charToAdd == '\0') return;
 
@@ -390,7 +414,7 @@ public class TextEditor
         MoveCursor(ConsoleKey.RightArrow);
     }
 
-
+    // Remove a character from the text based on cursor position.
     private void RemoveCharacter()
     {
         // Get the character index we are hovering at with the cursor.
@@ -405,14 +429,12 @@ public class TextEditor
     }
 
 
-    // Properly updates the TextVerticalOffset variable which is used when displaying text on the container.
-    private void MoveText(int shiftDirection)
+    // Scrolls text up or down inside the container.
+    private void ScrollText(int shiftDirection)
     {
-        TextVerticalOffset += shiftDirection;
+        TextLineOffset += shiftDirection;
 
-        // 
-        if(TextVerticalOffset < 0) TextVerticalOffset = 0;
-
+        if(TextLineOffset < 0) TextLineOffset = 0;
     }
 
     // Given a container (DynamicContainer), an origin (ContainerOffset) and a vertical offset (TextVerticalOffset), it displays as much as the
@@ -420,7 +442,7 @@ public class TextEditor
     public void PrintText()
     {
         // Clear the console to avoid ghosting.
-        Console.Clear();
+        //Console.Clear();
 
         PrintHeader();
         Console.SetCursorPosition(ContainerOffset.x, ContainerOffset.y);
@@ -429,15 +451,15 @@ public class TextEditor
         if(Text.Count == 0) return;
 
         // Container width.
-        int w = DynamicContainer.w;
+        int w = Container.w;
 
         // For each line...
         // It also runs if the line it not completely filled with characters: ((y_row + 1) % Text.Count == 0 ? 0 : 1)
         // Takes TextVerticalOffset into consideration.
         int moduloFirst = Text.Count > 0 ? 1 : 0;
-        for(int y_row = TextVerticalOffset; y_row < (Text.Count / w) + ((y_row + 1) % Text.Count == 0 ? moduloFirst : 1) && y_row - TextVerticalOffset < DynamicContainer.h; y_row++)
+        for(int y_row = TextLineOffset; y_row < (Text.Count / w) + ((y_row + 1) % Text.Count == 0 ? moduloFirst : 1) && y_row - TextLineOffset < Container.h; y_row++)
         {
-            Console.SetCursorPosition(ContainerOffset.x, ContainerOffset.y + y_row - TextVerticalOffset);
+            Console.SetCursorPosition(ContainerOffset.x, ContainerOffset.y + y_row - TextLineOffset);
 
             // For each char on that row...
             for(int x_charIndex = 0; x_charIndex < w && (y_row * w) + x_charIndex < Text.Count; x_charIndex++)
@@ -448,7 +470,6 @@ public class TextEditor
 
 
         // put cursor back in place.
-        //Console.SetCursorPosition(pos.x, pos.y);
         Console.SetCursorPosition(cursorPos.x, cursorPos.y);
     }
 
@@ -459,13 +480,13 @@ public class TextEditor
         Console.BackgroundColor = ConsoleColor.Gray;
 
         // Draw a white line
-        for(int i = 0; i < DynamicContainer.w; i++)
+        for(int i = 0; i < Container.w; i++)
         {
             Console.Write(" ");
         }
 
         // Position cursor into palce to start printing the title.
-        Console.SetCursorPosition(ContainerOffset.x + DynamicContainer.w / 2 - _title.Length / 2, ContainerOffset.y - 1);
+        Console.SetCursorPosition(ContainerOffset.x + Container.w / 2 - _title.Length / 2, ContainerOffset.y - 1);
 
         Console.ForegroundColor = ConsoleColor.Black;
         Console.Write(_title);

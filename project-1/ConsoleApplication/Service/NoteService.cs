@@ -89,17 +89,16 @@ public class NoteService
         // Run the app
         while(exitCode != TextEditor.ExitCode.EXIT && exitCode != TextEditor.ExitCode.SAVE_AND_EXIT)
         {
-            Note newContents;
-
-
-            (exitCode, newContents) = editor.Run(loopMessage);
-
+            exitCode = editor.Run(loopMessage);
 
             // Update our note with the new contents. Leave the ID intact as the text editor doesnt touch that.
-            note.Title = newContents.Title;
-            note.Content = newContents.Content;
+            String content = "";
+            foreach (char c in editor.Text) content += c;
+            note.Title = editor.Title;
+            note.Content = content;
+            
+            // Reset the loop message.
             loopMessage = null;
-
 
             // If the user wants to save the note, attempt to save it:
             if(exitCode == TextEditor.ExitCode.SAVE || exitCode == TextEditor.ExitCode.SAVE_AND_EXIT)
