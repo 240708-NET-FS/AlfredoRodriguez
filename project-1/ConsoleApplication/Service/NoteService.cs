@@ -96,7 +96,7 @@ public class NoteService
             foreach (char c in editor.Text) content += c;
             note.Title = editor.Title;
             note.Content = content;
-            
+
             // Reset the loop message.
             loopMessage = null;
 

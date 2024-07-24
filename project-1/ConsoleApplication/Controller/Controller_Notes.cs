@@ -1,5 +1,6 @@
 namespace Program.ApplicationController;
 
+using System.Net;
 using Program.Utils;
 
 // Here we define method handlers for the NOTES contex commands.
@@ -51,15 +52,26 @@ public partial class Controller
 
     // Attempts to load a saved note into the text editor.
     [Command(context:Command.CommandContext.NOTES, name:"open", description:
-    @"[C]open [note_title]
-    [E]Attempts to open a note by name.")]
+    @"[C]open [flag] [id]
+    [E] open -n [title] -> opens a note by title.
+    [E] open -id [id] -> opens a note by id.")]
     public int NotesOpen(String[] args)
     {
         // Validate input.
-        if(!ValidateInput("OPEN", ["note_title"], args)) return -1;
+        if(!ValidateInput("OPEN", ["flag", "note_title"], args)) return -1;
 
-        // Open note.
-        NoteService.OpenNote(args[0]);
+        // Attempt to open anote.
+        // If you missspell something, we just print the notes again and throw no error to not break the execution flow.
+        if(args[0].Equals("-n"))
+            NoteService.OpenNote(args[1]);
+        else if(args[0].Equals("-id"))
+        {
+            try
+            {
+                NoteService.OpenNote(int.Parse(args[1]));
+            }
+            catch(FormatException){}
+        }
 
         // Print the list of notes.
         NotesNotes([]);

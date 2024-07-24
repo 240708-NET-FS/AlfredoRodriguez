@@ -29,13 +29,13 @@ public class ConsoleApp
         while(commandContext != 0)
         {
             // Holds the command.
-            String command = null!;
+            String? command = null;
             // Holds the arguments for the command.
-            String[] args = null!;
+            String[]? args = null;
             // Set the command context
 
             // Get and validate input syntax.
-            ParseInput(Console.ReadLine(), out command, out args);
+            ParseInput(Console.ReadLine(), ref command, ref args);
 
             // Execute proper method handler for the command.
             commandContext = ExecuteMethodHandler(command, args);
@@ -61,17 +61,29 @@ public class ConsoleApp
     }
 
     // Retrieves and validates user input.
-    private void ParseInput(String? input, out String outCommand, out String[] outArgs)
+    private void ParseInput(String? input, ref String? outCommand, ref String[]? outArgs)
     {
-        // Input validation.
-        if(input is null || input.Length == 0)
-        {
-            PrepareErrorCommand("Input cannot be null. Type [ help ] for a list of commands.", out outCommand, out outArgs);
-            return;
-        }
+        // If no input, return;
+        if(input is null || input.Length == 0) return;
+
 
         // Get words.
         String[] words = input!.Split(' ');
+        List<String> wordsList = new List<String>();
+
+        // This gets rid of empty string in case someone inputs a command followed by a space or too many spaces.
+        for(int i = 0; i < words.Length; i++)
+        {
+            words[i] = words[i].Trim();
+
+            if(!words[i].Equals("") || words.Equals("\0"))
+                wordsList.Add(words[i]);
+        }
+
+        words = wordsList.ToArray<String>();
+
+        // If we end up with no wods after trimming and filtering the blank stings and new lines out, return.
+        if(words.Length == 0) return;
 
         // Record first word as the command.
         outCommand = words[0];
@@ -83,15 +95,12 @@ public class ConsoleApp
         Array.Copy(words, 1, outArgs, 0, outArgs.Length);
     }
 
-    // Prepares the outCommand and outArgs fields to contain an error command with the given message.
-    private void PrepareErrorCommand(String message, out String outCommand, out String[] outArgs)
+    private int ExecuteMethodHandler(String? command, String[]? args)
     {
-        outCommand = "ERROR";
-        outArgs = new string[]{message};
-    }
 
-    private int ExecuteMethodHandler(String command, String[] args)
-    {
+        // If no command was provided, do nothing.
+        if(command is null) return 1;
+
         // For each method of the Controller class.
         foreach (var m in ControllerMethods)
         {
@@ -112,7 +121,7 @@ public class ConsoleApp
                 if(commandAtt.Name.ToUpper().Equals(command.ToUpper()))
                 {
                     // Prepare method arguments.
-                    Object[] methodArgs = {args};
+                    Object[] methodArgs = {args!};
 
                     // Invoke the method using the controller instance as the instance to invoke it on.
                     return (int) m.Invoke(AppController, methodArgs)!;

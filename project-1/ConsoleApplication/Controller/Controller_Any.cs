@@ -74,9 +74,9 @@ public partial class Controller
     }
 
     // Prints a message to the console in error format.
-    [Command(context:Command.CommandContext.ANY, name:"ERROR", description:
+    /* [Command(context:Command.CommandContext.ANY, name:"ERROR", description:
     @"[C]error
-    [E]Thrown when an error occurs. You can also call it and type something if you are bored, it will throw that message back.")]
+    [E]Thrown when an error occurs. You can also call it and type something if you are bored, it will throw that message back.")] */
     public int Error(String[] msg)
     {
         String[] err = ["Error"];
