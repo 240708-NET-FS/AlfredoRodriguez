@@ -31,7 +31,8 @@ public class UserService
         if(userName == null)
         {
             //Screen.UpdateScreenContent(["You must be logged in on the account you whish to delete."]);
-            Screen.ErrorMesage = "You must be logged in on the account you whish to delete.";
+            //Screen.messageString = "You must be logged in on the account you whish to delete.";
+            Screen.SetMessage("You must be logged in on the account you whish to delete.", Screen.MessageType.Error);
             return;
         }
 
@@ -41,7 +42,8 @@ public class UserService
         if(user is null)
         {
             //Screen.UpdateScreenContent(["Something went wrong. Please log in again."]);
-            Screen.ErrorMesage = "Something went wrong. Please log in again.";
+            //Screen.messageString = "Something went wrong. Please log in again.";
+            Screen.SetMessage("Something went wrong. Please log in again.", Screen.MessageType.Error);
             return;
         }
 
@@ -60,6 +62,7 @@ public class UserService
                 // Ask for confirmation.
                 Screen.UpdateScreenContent(prompt);
 
+            Screen.PrintScreen();
             ConsoleKeyInfo keyInfo = Console.ReadKey();
             
             // If Y, continue with deletion.
@@ -75,8 +78,12 @@ public class UserService
         }
 
         // Update UI to let user know we are currently attempting to delete the account.
-        Screen.UpdateScreenContent(["Deleting..."], null, false);
-        Screen.PrintScreen(Screen.InputState.FORBIDDEN);
+        //Screen.UpdateScreenContent(["Deleting..."]);
+        Screen.SetMessage("Deleting...", Screen.MessageType.Info, true);
+
+        Screen.inputState = Screen.InputState.FORBIDDEN;
+        //Screen.PrintScreen();
+        //Screen.PrintScreen(Screen.InputState.FORBIDDEN);
 
         // Remove user.
         UserDAO.RemoveUser(user);
@@ -84,7 +91,8 @@ public class UserService
         // Locally logs the user out.
         Session.GetInstance().User = null!;
 
-        Screen.UpdateScreenContent(["Account deleted."]);
+        Screen.SetMessage("Account deleted.", Screen.MessageType.Info);
+        //Screen.UpdateScreenContent(["Account deleted."]);
     }
 
     public void RegisterUser(string name, string password)
@@ -93,27 +101,32 @@ public class UserService
         if(Session.GetInstance().User != null)
         {
             //Screen.UpdateScreenContent(["You cannot try to register while logged in."]);
-            Screen.ErrorMesage = "You cannot try to register while logged in.";
+            //Screen.messageString = "You cannot try to register while logged in.";
+            Screen.SetMessage("You cannot try to register while logged in.", Screen.MessageType.Error);
             return;
         }
         if(name.Length < 3)
         {
             //Screen.UpdateScreenContent(["The name must be at least 3 characters long."]);
-            Screen.ErrorMesage = "The name must be at least 3 characters long.";
+            //Screen.messageString = "The name must be at least 3 characters long.";
+            Screen.SetMessage("The name must be at least 3 characters long.", Screen.MessageType.Error);
 
             return;
         }
         if(password.Length < 5)
         {
             //Screen.UpdateScreenContent(["The password must be at least 5 characters long."]);
-            Screen.ErrorMesage = "The password must be at least 5 characters long.";
+            //Screen.messageString = "The password must be at least 5 characters long.";
+            Screen.SetMessage("The password must be at least 5 characters long.", Screen.MessageType.Error);
 
             return;
         }
 
         // Update user that we will attempt to register now.
-        Screen.UpdateScreenContent(["Registering..."], null, false);
-        Screen.PrintScreen(Screen.InputState.FORBIDDEN);
+        //Screen.UpdateScreenContent(["Registering..."]);
+        Screen.SetMessage("Registering...", Screen.MessageType.Info, true);
+        Screen.inputState = Screen.InputState.FORBIDDEN;
+        //Screen.PrintScreen(Screen.InputState.FORBIDDEN);
 
         // Attempt to register
         User? user = UserDAO.AddUser(new User{Name = name, Password = password});
@@ -123,29 +136,36 @@ public class UserService
         if(user is null)
         {
             //Screen.UpdateScreenContent(["Username already taken."]);
-            Screen.ErrorMesage = "Username already taken.";
+            //Screen.messageString = "Username already taken.";
+            Screen.SetMessage("Username already taken.", Screen.MessageType.Error);
             return;
         }
         
         LoginUser(user.Name, user.Password);
 
         // Inform the user that we are registered and logged in.
-        Screen.UpdateScreenContent(["Account created and logged in."]);
+        //Screen.UpdateScreenContent(["Account created and logged in."]);
+        Screen.SetMessage("Account created and logged in.", Screen.MessageType.Info);
     }
 
     public bool LoginUser(String name, String password)
     {
         // Check that we are not logged in already.
+        // Inform user that we are attempting to login.
+        //Screen.UpdateScreenContent(["Logging you in..."]);
+        Screen.SetMessage("Logging you in...", Screen.MessageType.Info, true);
+        Screen.inputState = Screen.InputState.FORBIDDEN;
+        //Screen.PrintScreen(Screen.InputState.FORBIDDEN);
+        //Screen.PrintScreen();
+
         if(Session.GetInstance().User != null)
         {
             //Screen.UpdateScreenContent(["You are already logged in with an account."]);
-            Screen.ErrorMesage = "You are already logged in with an account.";
+            //Screen.messageString = "You are already logged in with an account.";
+            Screen.SetMessage("You are already logged in with an account.", Screen.MessageType.Error);
             return false;
         }
 
-        // Inform user that we are attempting to login.
-        Screen.UpdateScreenContent(["Logging you in..."], null, false);
-        Screen.PrintScreen(Screen.InputState.FORBIDDEN);
 
 
         User? user = UserDAO.GetUserByName(name);
@@ -153,15 +173,16 @@ public class UserService
         if(user is null)
         {
             //Screen.UpdateScreenContent(["Incorrect user."]);
-            Screen.ErrorMesage = "Incorrect user.";
+            //Screen.messageString = "Incorrect user.";
+            Screen.SetMessage("Incorrect user.", Screen.MessageType.Error);
             return false;
         }
 
         if(!user.Password.Contains(password))
         {
             //Screen.UpdateScreenContent(["Incorrect password."]);
-            Screen.ErrorMesage = "Incorrect password.";
-
+            //Screen.messageString = "Incorrect password.";
+            Screen.SetMessage("Incorrect password.", Screen.MessageType.Error);
             return false;
         }
 
@@ -178,7 +199,8 @@ public class UserService
         if(Session.GetInstance().User == null)
         {
             //Screen.UpdateScreenContent(["You must be logged in in order to log out."]);
-            Screen.ErrorMesage = "You must be logged in in order to log out.";
+            //Screen.messageString = "You must be logged in in order to log out.";
+            Screen.SetMessage("You must be logged in in order to log out.", Screen.MessageType.Error);
             return;
         }
 

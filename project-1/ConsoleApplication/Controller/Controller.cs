@@ -56,7 +56,8 @@ public partial class Controller
         fullMessage = fullMessage.Concat(messageLines).ToArray<String>();
 
         //Error(fullMessage);
-        Screen.ErrorMesage = $"Incorrect use of the [{command}] command. Type [help] for more information.";
+        //Screen.messageString = $"Incorrect use of the [{command}] command. Type [help] for more information.";
+        Screen.SetMessage($"Incorrect use of the [{command}] command. Type [help] for more information.", Screen.MessageType.Error);
         
         return false;
     }
@@ -64,7 +65,8 @@ public partial class Controller
     public int PrintError(String msg)
     {
         //ConsoleScreen.PrintErrorLine(msg);
-        Screen.ErrorMesage = msg;
+        //Screen.messageString = msg;
+        Screen.SetMessage(msg, Screen.MessageType.Error);
         return -1;
     }
 }

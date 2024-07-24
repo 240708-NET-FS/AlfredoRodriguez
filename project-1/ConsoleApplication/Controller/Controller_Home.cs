@@ -67,8 +67,9 @@ public partial class Controller
         String password = args[1];
 
         // Login user.
-        if(UserService.LoginUser(name, password))
-            HomeHome([]);
+        UserService.LoginUser(name, password);
+        
+        HomeHome([]);
         
         return 1;
     }

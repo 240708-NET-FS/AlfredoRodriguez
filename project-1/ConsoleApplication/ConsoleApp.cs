@@ -41,6 +41,7 @@ public class ConsoleApp
             commandContext = ExecuteMethodHandler(command, args);
 
             // Prints the screen again in order to update the command context UI.
+            Screen.GetInstance().inputState = Screen.InputState.ALLOWED;
             Screen.GetInstance().PrintScreen();
         }
 
@@ -52,6 +53,7 @@ public class ConsoleApp
     private void Init()
     {
         AppController.Welcome();
+        Screen.GetInstance().PrintScreen();
     }
 
     // Any de-initialization tasks go here

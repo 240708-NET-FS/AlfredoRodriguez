@@ -83,8 +83,8 @@ public partial class Controller
         err = err.Concat(msg).ToArray<String>();
 
         // Print the error
-        Screen.UpdateScreenContent(err, [ConsoleColor.Red], false);
-        Screen.PrintScreen(Screen.InputState.ALLOWED);
+        //Screen.UpdateScreenContent(err, [ConsoleColor.Red], false);
+        //Screen.PrintScreen(Screen.InputState.ALLOWED);
 
         return -1;
     }
@@ -134,7 +134,7 @@ public partial class Controller
             "Register: register [username] [password]",
             "More: help",
         ], [ConsoleColor.White, ConsoleColor.DarkGray]);
-        
+
         return 1;
     }
 

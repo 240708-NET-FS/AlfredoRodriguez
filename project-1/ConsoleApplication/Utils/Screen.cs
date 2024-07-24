@@ -15,13 +15,29 @@ class Screen
         FORBIDDEN // Visually display the console's input line as if not allowing input.
     };
 
+    public enum MessageType
+    {
+        Error,
+        Info
+    };
+
     private int lineTokenLen = 3;
     private const int ReservedLinesCount = 3;
     private String[] Contents = [""];
     private ConsoleColor[]? ContentColors = null;
     private int ContentsPageIndex = 0;
     static private Screen Instance = null!;
-    public String ErrorMesage = null;
+    private (String msg, MessageType t) messageString = (null!, MessageType.Info);
+    private InputState _inputState;
+    public InputState inputState 
+    {
+        get => _inputState;
+        set 
+        {
+            _inputState = value;
+            PrintInputLine();
+        }
+    }
 
     private Screen(){}
     static public Screen GetInstance()
@@ -35,24 +51,28 @@ class Screen
     }
 
     // Updates the screen contents.
-    public void UpdateScreenContent(String[] contents, ConsoleColor[]? colors = null, bool print = true)
+    public void UpdateScreenContent(String[] contents, ConsoleColor[]? colors = null)
     {
         Contents = contents;
         ContentColors = colors is null || colors.Length == 0 ? [ConsoleColor.White] : colors;
         ContentsPageIndex = 0;
-        if(print) PrintScreen();
+    }
+
+    public void SetMessage(String msg, MessageType t, bool pushItNow = false)
+    {
+        messageString = (msg, t);
+        if(pushItNow) PrintScreen();
     }
 
     // Displays the screen contents. Also allows you to set the input state and the command
-    public void PrintScreen(InputState state = InputState.ALLOWED)
+    public void PrintScreen()
     {
         Console.Clear();
         Console.ResetColor();
         PrintHeadLine();
-        PrintErrorLine();
         PrintInfoLine();
         PrintContentPage();
-        PrintInputLine(state);
+        PrintInputLine();
     }
 
     // Prints out all the commands.
@@ -159,6 +179,9 @@ class Screen
     // Prints the info line (second line)
     private void PrintInfoLine()
     {
+        // Print any message that might have come up.
+        PrintMessageString();
+
         Console.ResetColor();
 
         String? userName = Session.GetInstance().User?.Name;
@@ -202,8 +225,6 @@ class Screen
     private void PrintContentPage()
     {
         Console.ResetColor();
-        // If there is no content to print, return.
-        //if(Contents is null) return;// ----------------------------------------***********
         // If there is no defined color, use White.
         if(ContentColors is null) ContentColors = [ConsoleColor.White];
 
@@ -263,17 +284,17 @@ class Screen
         if(targetPage <= totalPages && targetPage > 0)
         {
             ContentsPageIndex += dir;
-            PrintScreen(InputState.ALLOWED);
+            PrintScreen();
         }
     }
 
-    private void PrintInputLine(InputState state, ConsoleColor color = ConsoleColor.DarkGray)
+    private void PrintInputLine()
     {
         String contextMessage = "current context -> " + Session.GetInstance().CommandContext;
         Console.ResetColor();
         Console.SetCursorPosition(0, Console.WindowHeight);
 
-        if(state == InputState.ALLOWED)
+        if(inputState == InputState.ALLOWED)
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.CursorVisible = true;
@@ -287,7 +308,7 @@ class Screen
         }
 
         Console.SetCursorPosition(Console.WindowWidth - contextMessage.Length, Console.WindowHeight);
-        Console.ForegroundColor = color;
+        Console.ForegroundColor = ConsoleColor.DarkGray;
         Console.Write(contextMessage);
         Console.ForegroundColor = ConsoleColor.White;
         Console.SetCursorPosition(4, Console.WindowHeight);
@@ -298,20 +319,21 @@ class Screen
         Console.Clear();
     }
 
-    internal void PrintErrorLine()
+    internal void PrintMessageString()
     {
-        if(ErrorMesage is null) return;
+        if(messageString.msg is null) return;
 
         (int x, int y) cursorPos = Console.GetCursorPosition();
 
-        Console.SetCursorPosition(Console.WindowWidth / 2 - ErrorMesage.Length / 2, 1);
-        Console.BackgroundColor = ConsoleColor.Red;
+        Console.SetCursorPosition(Console.WindowWidth / 2 - messageString.msg.Length / 2, 1);
+        Console.BackgroundColor = messageString.t == MessageType.Error ? ConsoleColor.Red : ConsoleColor.Blue;
         Console.ForegroundColor = ConsoleColor.White;
 
-        Console.Write(ErrorMesage);
-        ErrorMesage = null!;
-
+        Console.Write(messageString.msg);
         Console.ResetColor();
         Console.SetCursorPosition(cursorPos.x, cursorPos.y);
+
+        // We reset the message string after printing it.
+        messageString.msg = null!;
     }
 }
