@@ -5,7 +5,7 @@ using Program.Utils;
 public partial class Controller
 {
     private NoteService NoteService = new NoteService();
-    private Screen ConsoleScreen = Screen.GetInstance();
+    private Screen Screen = Screen.GetInstance();
     private UserService UserService = new UserService();
 
     // Validates input, takes care of informing the user if the input is incorrect.
@@ -55,8 +55,16 @@ public partial class Controller
         String[] fullMessage = [infoLine, errorLine];
         fullMessage = fullMessage.Concat(messageLines).ToArray<String>();
 
-        Error(fullMessage);
+        //Error(fullMessage);
+        Screen.ErrorMesage = $"Incorrect use of the [{command}] command. Type [help] for more information.";
         
         return false;
+    }
+
+    public int PrintError(String msg)
+    {
+        //ConsoleScreen.PrintErrorLine(msg);
+        Screen.ErrorMesage = msg;
+        return -1;
     }
 }

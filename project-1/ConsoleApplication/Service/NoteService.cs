@@ -46,7 +46,8 @@ public class NoteService
 
         if(note is null)
         {
-            Screen.UpdateScreenContent([$"No note with ID {noteId} exist."]);
+            //Screen.UpdateScreenContent([$"No note with ID {noteId} exist."]);
+            Screen.ErrorMesage = $"No note with ID {noteId} exist.";
             return;
         }
 
@@ -59,7 +60,8 @@ public class NoteService
 
         if(note is null)
         {
-            Screen.UpdateScreenContent([$"The note {noteTitle} doesn't exist."]);
+            //Screen.UpdateScreenContent([$"The note {noteTitle} doesn't exist."]);
+            Screen.ErrorMesage = $"No note with ID {noteTitle} exist.";
             return;
         }
 
@@ -76,7 +78,8 @@ public class NoteService
 
         if(note.Title is null)
         {
-            Screen.UpdateScreenContent(["You must provide a title for the note like this: new [note_title]."]);
+            //Screen.UpdateScreenContent(["You must provide a title for the note like this: new [note_title]."]);
+            Screen.ErrorMesage = "You must provide a title for the note like this: new [note_title].";
             return;
         }
 
@@ -110,7 +113,8 @@ public class NoteService
 
                     if(note is null)
                     {
-                        Screen.UpdateScreenContent(["Oops. Something went wrong on the database while creating the note."]);
+                        //Screen.UpdateScreenContent(["Oops. Something went wrong on the database while creating the note."]);
+                        Screen.ErrorMesage = "Oops. Something went wrong on the database while creating the note.";
                         return;
                     }
 
@@ -121,7 +125,8 @@ public class NoteService
 
                     if(note is null)
                     {
-                        Screen.UpdateScreenContent(["Oops. Something went wrong on the database while updating the note."]);
+                        //Screen.UpdateScreenContent(["Oops. Something went wrong on the database while updating the note."]);
+                        Screen.ErrorMesage = "Oops. Something went wrong on the database while updating the note.";
                         return;
                     }
                 }

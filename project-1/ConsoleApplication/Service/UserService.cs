@@ -30,7 +30,8 @@ public class UserService
         // Check if the user is logged in.
         if(userName == null)
         {
-            Screen.UpdateScreenContent(["You must be logged in on the account you whish to delete."]);
+            //Screen.UpdateScreenContent(["You must be logged in on the account you whish to delete."]);
+            Screen.ErrorMesage = "You must be logged in on the account you whish to delete.";
             return;
         }
 
@@ -39,7 +40,8 @@ public class UserService
         // This sould never happen.
         if(user is null)
         {
-            Screen.UpdateScreenContent(["Something went wrong. Please log in again."]);
+            //Screen.UpdateScreenContent(["Something went wrong. Please log in again."]);
+            Screen.ErrorMesage = "Something went wrong. Please log in again.";
             return;
         }
 
@@ -90,17 +92,22 @@ public class UserService
         // Check that we are not logged in already.
         if(Session.GetInstance().User != null)
         {
-            Screen.UpdateScreenContent(["You cannot try to register while logged in."]);
+            //Screen.UpdateScreenContent(["You cannot try to register while logged in."]);
+            Screen.ErrorMesage = "You cannot try to register while logged in.";
             return;
         }
         if(name.Length < 3)
         {
-            Screen.UpdateScreenContent(["The name must be at least 3 characters long."]);
+            //Screen.UpdateScreenContent(["The name must be at least 3 characters long."]);
+            Screen.ErrorMesage = "The name must be at least 3 characters long.";
+
             return;
         }
         if(password.Length < 5)
         {
-            Screen.UpdateScreenContent(["The password must be at least 5 characters long."]);
+            //Screen.UpdateScreenContent(["The password must be at least 5 characters long."]);
+            Screen.ErrorMesage = "The password must be at least 5 characters long.";
+
             return;
         }
 
@@ -115,7 +122,8 @@ public class UserService
         // future)
         if(user is null)
         {
-            Screen.UpdateScreenContent(["Username already taken."]);
+            //Screen.UpdateScreenContent(["Username already taken."]);
+            Screen.ErrorMesage = "Username already taken.";
             return;
         }
         
@@ -130,7 +138,8 @@ public class UserService
         // Check that we are not logged in already.
         if(Session.GetInstance().User != null)
         {
-            Screen.UpdateScreenContent(["You are already logged in with an account."]);
+            //Screen.UpdateScreenContent(["You are already logged in with an account."]);
+            Screen.ErrorMesage = "You are already logged in with an account.";
             return false;
         }
 
@@ -143,13 +152,16 @@ public class UserService
 
         if(user is null)
         {
-            Screen.UpdateScreenContent(["Incorrect user."]);
+            //Screen.UpdateScreenContent(["Incorrect user."]);
+            Screen.ErrorMesage = "Incorrect user.";
             return false;
         }
 
         if(!user.Password.Contains(password))
         {
-            Screen.UpdateScreenContent(["Incorrect password."]);
+            //Screen.UpdateScreenContent(["Incorrect password."]);
+            Screen.ErrorMesage = "Incorrect password.";
+
             return false;
         }
 
@@ -165,7 +177,8 @@ public class UserService
         // Check that we are not logged in already.
         if(Session.GetInstance().User == null)
         {
-            Screen.UpdateScreenContent(["You must be logged in in order to log out."]);
+            //Screen.UpdateScreenContent(["You must be logged in in order to log out."]);
+            Screen.ErrorMesage = "You must be logged in in order to log out.";
             return;
         }
 
@@ -173,6 +186,5 @@ public class UserService
         Session.GetInstance().User = null!;
 
         Screen.UpdateScreenContent(["Bye."]);
-
     }
 }

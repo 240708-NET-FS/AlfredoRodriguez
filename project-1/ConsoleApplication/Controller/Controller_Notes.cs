@@ -21,7 +21,12 @@ public partial class Controller
         String? user = Session.GetInstance().User?.Name;
 
         // Make sure we are logged in.
-        if(user is null) return Error(["You must be logged in to execute the [ notes ] command."]);
+        if(user is null)
+        {
+            Screen.ErrorMesage = "You must be logged in to execute the [ notes ] command.";
+            return -1;
+            //return Error(["You must be logged in to execute the [ notes ] command."]);
+        }
 
         // Conditions for entering the NOTES context met, so we enter it.
         Session.GetInstance().CommandContext = Command.CommandContext.NOTES;

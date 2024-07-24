@@ -28,7 +28,7 @@ public partial class Controller
         if(user is null) return Welcome();
 
         // Print HOME screen
-        ConsoleScreen.UpdateScreenContent
+        Screen.UpdateScreenContent
         ([
             $"Welcome, {user}.",
             "",
@@ -44,7 +44,7 @@ public partial class Controller
     [E]Call those two to navigate pages on the console when availible.")]
     public int Next(String[] args)
     {
-        ConsoleScreen.ChangePage(1);
+        Screen.ChangePage(1);
         return 1;
     }
 
@@ -52,7 +52,7 @@ public partial class Controller
     [Command(context:Command.CommandContext.ANY, name:"<")]
     public int Previous(String[] args)
     {
-        ConsoleScreen.ChangePage(-1);
+        Screen.ChangePage(-1);
         return 1;
     }
 
@@ -83,8 +83,8 @@ public partial class Controller
         err = err.Concat(msg).ToArray<String>();
 
         // Print the error
-        ConsoleScreen.UpdateScreenContent(err, [ConsoleColor.Red], false);
-        ConsoleScreen.PrintScreen(Screen.InputState.ALLOWED);
+        Screen.UpdateScreenContent(err, [ConsoleColor.Red], false);
+        Screen.PrintScreen(Screen.InputState.ALLOWED);
 
         return -1;
     }
@@ -99,7 +99,7 @@ public partial class Controller
         if(!ValidateInput("HELP", [], args)) return -1;
 
         // Print commands.
-        ConsoleScreen.PrintCommands();
+        Screen.PrintCommands();
         return 1;
     }
 
@@ -125,7 +125,7 @@ public partial class Controller
         Session.GetInstance().CommandContext = Command.CommandContext.HOME;
 
         // Print Welcome screen.
-        ConsoleScreen.UpdateScreenContent
+        Screen.UpdateScreenContent
         ([
             "Welcome to CloudNotes.",
             "",

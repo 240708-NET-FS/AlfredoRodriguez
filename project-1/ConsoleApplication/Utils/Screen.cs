@@ -21,6 +21,7 @@ class Screen
     private ConsoleColor[]? ContentColors = null;
     private int ContentsPageIndex = 0;
     static private Screen Instance = null!;
+    public String ErrorMesage = null;
 
     private Screen(){}
     static public Screen GetInstance()
@@ -48,6 +49,7 @@ class Screen
         Console.Clear();
         Console.ResetColor();
         PrintHeadLine();
+        PrintErrorLine();
         PrintInfoLine();
         PrintContentPage();
         PrintInputLine(state);
@@ -294,5 +296,22 @@ class Screen
     public void ClearScreen()
     {
         Console.Clear();
+    }
+
+    internal void PrintErrorLine()
+    {
+        if(ErrorMesage is null) return;
+
+        (int x, int y) cursorPos = Console.GetCursorPosition();
+
+        Console.SetCursorPosition(Console.WindowWidth / 2 - ErrorMesage.Length / 2, 1);
+        Console.BackgroundColor = ConsoleColor.Red;
+        Console.ForegroundColor = ConsoleColor.White;
+
+        Console.Write(ErrorMesage);
+        ErrorMesage = null!;
+
+        Console.ResetColor();
+        Console.SetCursorPosition(cursorPos.x, cursorPos.y);
     }
 }
