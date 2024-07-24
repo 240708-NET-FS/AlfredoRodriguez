@@ -46,7 +46,7 @@ public class NoteService
 
         if(note is null)
         {
-            Screen.SetMessage($"No note with ID {noteId} exist.", Screen.MessageType.Error);
+            Screen.SetMessage($"No note with ID [{noteId}] found.", Screen.MessageType.Error);
             return;
         }
 
@@ -59,7 +59,7 @@ public class NoteService
 
         if(note is null)
         {
-            Screen.SetMessage($"No note with ID {noteTitle} exist.", Screen.MessageType.Error);
+            Screen.SetMessage($"No note with title [{noteTitle}] found.", Screen.MessageType.Error);
             return;
         }
 

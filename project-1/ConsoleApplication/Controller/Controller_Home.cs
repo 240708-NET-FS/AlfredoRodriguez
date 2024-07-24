@@ -23,6 +23,8 @@ public partial class Controller
         // Attempt to register the new user.
         UserService.RegisterUser(name, password);
 
+        HomeHome([]);
+
         return 1;
     }
 
@@ -68,7 +70,7 @@ public partial class Controller
 
         // Login user.
         UserService.LoginUser(name, password);
-        
+
         HomeHome([]);
         
         return 1;

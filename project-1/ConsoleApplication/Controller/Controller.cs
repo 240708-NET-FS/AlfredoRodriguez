@@ -9,8 +9,6 @@ public partial class Controller
     private UserService UserService = new UserService();
 
     // Validates input, takes care of informing the user if the input is incorrect.
-    // Returns:
-    // 1 if pass
     private bool ValidateInput(String command, String[] expected, String[]? provided)
     {
         if(provided is null) provided = [];
@@ -24,7 +22,7 @@ public partial class Controller
         return false;
     }
 
-    // This command is not availible to the user, it's called by the application.
+    // Executed by the application loop if the user's input fails validation at that level.
     public int CommandNotFound(String msg)
     {
         Screen.SetMessage(msg, Screen.MessageType.Error);

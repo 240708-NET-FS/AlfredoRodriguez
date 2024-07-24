@@ -74,11 +74,16 @@ public partial class Controller
             {
                 NoteService.OpenNote(int.Parse(args[1]));
             }
-            catch(FormatException){}
+            catch(FormatException)
+            {
+                Screen.SetMessage($"{args[1]} is not a valid note ID.", Screen.MessageType.Error);
+            }
         }
 
         // Print the list of notes.
         NotesNotes([]);
         return 1;
     }
+
+    
 }
