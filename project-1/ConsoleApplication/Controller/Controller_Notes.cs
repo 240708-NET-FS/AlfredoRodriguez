@@ -23,10 +23,8 @@ public partial class Controller
         // Make sure we are logged in.
         if(user is null)
         {
-            //Screen.messageString = "You must be logged in to execute the [ NOTES ] command.";
             Screen.SetMessage("You must be logged in to execute the [ NOTES ] command.", Screen.MessageType.Error);
             return -1;
-            //return Error(["You must be logged in to execute the [ notes ] command."]);
         }
 
         // Conditions for entering the NOTES context met, so we enter it.
