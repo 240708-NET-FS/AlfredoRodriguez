@@ -58,4 +58,46 @@ public class NoteDAO
 
         return note;
     }
+
+    public Note? RemoveNoteByTitle(String title)
+    {
+        // Get connection
+        DatabaseContext c = Connection.Get();
+
+        // Find note to remove
+        Note? toRemove = c.Notes.FirstOrDefault(n => n.Title == title);
+
+        // If it doesnt exists, return null
+        if(toRemove is null) return null;
+
+        // If it does exists, then remove it
+        c.Notes.Remove(toRemove);
+
+        // Persist changes
+        c.SaveChanges();
+
+        // Return just removed noted
+        return toRemove;
+    }
+
+    public Note? RemoveNoteById(int noteId)
+    {
+        // Get connection
+        DatabaseContext c = Connection.Get();
+
+        // Find note to remove
+        Note? toRemove = c.Notes.Find(noteId);
+
+        // If it doesnt exists, return null
+        if(toRemove is null) return null;
+
+        // If it does exists, then remove it
+        c.Notes.Remove(toRemove);
+
+        // Persist changes
+        c.SaveChanges();
+
+        // Return just removed noted
+        return toRemove;
+    }
 }

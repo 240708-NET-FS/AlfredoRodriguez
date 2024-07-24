@@ -130,4 +130,26 @@ public class NoteService
             }
         }
     }
+
+    public void RemoveNote(int noteId)
+    {
+        Note? note = NoteDAO.RemoveNoteById(noteId);
+
+        if(note is null)
+        {
+            Screen.SetMessage($"No note with ID [{noteId}] found.", Screen.MessageType.Error);
+            return;
+        }
+    }
+    
+    public void RemoveNote(String noteTitle)
+    {
+        Note? note = NoteDAO.RemoveNoteByTitle(noteTitle);
+
+        if(note is null)
+        {
+            Screen.SetMessage($"No note with title [{noteTitle}] found.", Screen.MessageType.Error);
+            return;
+        }
+    }
 }

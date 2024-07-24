@@ -57,7 +57,7 @@ public partial class Controller
     // Attempts to load a saved note into the text editor.
     [Command(context:Command.CommandContext.NOTES, name:"open", description:
     @"[C]open [flag] [id]
-    [E] open -n [title] -> opens a note by title.
+    [E] open -n [title] -> opens a note by title (first match).
     [E] open -id [id] -> opens a note by id.")]
     public int NotesOpen(String[] args)
     {
@@ -65,7 +65,7 @@ public partial class Controller
         if(!ValidateInput("OPEN", ["flag", "note_title"], args)) return -1;
 
         // Attempt to open anote.
-        // If you missspell something, we just print the notes again and throw no error to not break the execution flow.
+        // If the user misspells something, we just print the notes again and throw no error to not break the execution flow.
         if(args[0].Equals("-n"))
             NoteService.OpenNote(args[1]);
         else if(args[0].Equals("-id"))
@@ -85,5 +85,34 @@ public partial class Controller
         return 1;
     }
 
-    
+    // Attempts to load a saved note into the text editor.
+    [Command(context:Command.CommandContext.NOTES, name:"remove", description:
+    @"[C]remove [flag] [id]
+    [E] remove -n [title] -> removes a note by title (first match).
+    [E] remove -id [id] -> removes a note by id.")]
+    public int NotesRemove(String[] args)
+    {
+        // Validate input.
+        if(!ValidateInput("REMOVE", ["flag", "note_title"], args)) return -1;
+
+        // Attempt to remove anote.
+        // If the user misspells something, we just print the notes again and throw no error to not break the execution flow.
+        if(args[0].Equals("-n"))
+            NoteService.RemoveNote(args[1]);
+        else if(args[0].Equals("-id"))
+        {
+            try
+            {
+                NoteService.RemoveNote(int.Parse(args[1]));
+            }
+            catch(FormatException)
+            {
+                Screen.SetMessage($"{args[1]} is not a valid note ID.", Screen.MessageType.Error);
+            }
+        }
+
+        // Print the list of notes.
+        NotesNotes([]);
+        return 1;
+    }
 }

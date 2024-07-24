@@ -23,7 +23,7 @@ public class UserService
         return UserDAO.AddUser(new User(){Name = name, Password = password});
     }
 
-    public void DeleteAccount()
+    public bool DeleteAccount()
     {
         String? userName = Session.GetInstance().User?.Name;
 
@@ -31,7 +31,7 @@ public class UserService
         if(userName == null)
         {
             Screen.SetMessage("You must be logged in on the account you whish to delete.", Screen.MessageType.Error);
-            return;
+            return false;
         }
 
         User? user = UserDAO.GetUserByName(userName);
@@ -40,43 +40,36 @@ public class UserService
         if(user is null)
         {
             Screen.SetMessage("Something went wrong. Please log in again.", Screen.MessageType.Error);
-            return;
+            return false;
         }
 
         // This loop keeps on asking for confirmation to delete the account until Y or N is pressed.
         bool wasValidInput = true;
         while(true)
         {
-            // Original prompt
-            String[] prompt = ["Do you whish to delete your account and all its contents?","This action is not reversible", "Respond with Y / N"];
+            Screen.UpdateScreenContent(["Do you whish to delete your account and all its contents?","This action cannot be undone.", "Y / N"]);
+            Screen.SetMessage("Please confirm.", Screen.MessageType.Info);
 
-            // If the last response to the question was not a valid response (Y or N).
-            if(!wasValidInput)
-                // Add a red text at the top reiterating that we need etiher a Y or a N.
-                Screen.UpdateScreenContent(new String[]{"You must enter Y or N."}.Concat(prompt).ToArray<String>(), [ConsoleColor.Red, ConsoleColor.White]);
-            else
-                // Ask for confirmation.
-                Screen.UpdateScreenContent(prompt);
+            if(!wasValidInput) Screen.SetMessage("You must respond with Y or N.", Screen.MessageType.Error);
 
             Screen.PrintScreen();
-            ConsoleKeyInfo keyInfo = Console.ReadKey();
-            
+
+            String? input = Console.ReadLine();
             // If Y, continue with deletion.
-            if(keyInfo.Key == ConsoleKey.Y) break;
+            if(input != null && input.Trim().ToLower().Equals("y")) break;
             // If N, cancel deletion.
-            if(keyInfo.Key == ConsoleKey.N)
+            else if(input != null && input.Trim().ToLower().Equals("n"))
             {
-                Screen.UpdateScreenContent(["Deletion cancelled."]);
-                return;
+                //Screen.UpdateScreenContent(["Deletion cancelled."]);
+                Screen.SetMessage("Great! :)", Screen.MessageType.Info);
+                return false;
             }
 
             wasValidInput = false;
         }
 
         // Update UI to let user know we are currently attempting to delete the account.
-        //Screen.UpdateScreenContent(["Deleting..."]);
         Screen.SetMessage("Deleting...", Screen.MessageType.Info, true);
-
         Screen.inputState = Screen.InputState.FORBIDDEN;
 
         // Remove user.
@@ -85,7 +78,8 @@ public class UserService
         // Locally logs the user out.
         Session.GetInstance().User = null!;
 
-        Screen.SetMessage("Account deleted.", Screen.MessageType.Info);
+        Screen.SetMessage("Account deleted :(", Screen.MessageType.Info);
+        return true;
     }
 
     public void RegisterUser(string name, string password)

@@ -53,6 +53,8 @@ public partial class Controller
         // Attempt to delete the account.
         UserService.DeleteAccount();
 
+        HomeHome([]);
+        
         return 1;
     }
 
