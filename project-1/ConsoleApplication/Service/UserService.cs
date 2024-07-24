@@ -60,7 +60,6 @@ public class UserService
             // If N, cancel deletion.
             else if(input != null && input.Trim().ToLower().Equals("n"))
             {
-                //Screen.UpdateScreenContent(["Deletion cancelled."]);
                 Screen.SetMessage("Great! :)", Screen.MessageType.Info);
                 return false;
             }
