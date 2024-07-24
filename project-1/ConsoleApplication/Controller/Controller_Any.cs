@@ -73,26 +73,10 @@ public partial class Controller
         return 1;
     }
 
-    // Prints a message to the console in error format.
-    /* [Command(context:Command.CommandContext.ANY, name:"ERROR", description:
-    @"[C]error
-    [E]Thrown when an error occurs. You can also call it and type something if you are bored, it will throw that message back.")] */
-    public int Error(String[] msg)
-    {
-        String[] err = ["Error"];
-        err = err.Concat(msg).ToArray<String>();
-
-        // Print the error
-        //Screen.UpdateScreenContent(err, [ConsoleColor.Red], false);
-        //Screen.PrintScreen(Screen.InputState.ALLOWED);
-
-        return -1;
-    }
-
     // Prints out all commands for the current command context.
     [Command(context:Command.CommandContext.ANY, name:"HELP", description:
     @"[C]help
-    [E]Prints out all availible commands.")]
+    [E]Prints out all availible commands for the current context.")]
     public int Help(String[] args)
     {
         // Validate input.

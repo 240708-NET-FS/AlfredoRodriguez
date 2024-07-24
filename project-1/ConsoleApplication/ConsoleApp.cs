@@ -132,7 +132,6 @@ public class ConsoleApp
         }
 
         // If command not found, execute the error command.
-        //return AppController.Error(["Command not found. Type [ help ] for a list of commands"]);
-        return AppController.PrintError("Command not found. Type [ help ] for a list of commands");
+        return AppController.CommandNotFound("Command not found. Type [ help ] for a list of commands");
     }
 }

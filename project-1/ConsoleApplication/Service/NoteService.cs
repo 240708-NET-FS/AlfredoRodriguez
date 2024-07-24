@@ -46,8 +46,6 @@ public class NoteService
 
         if(note is null)
         {
-            //Screen.UpdateScreenContent([$"No note with ID {noteId} exist."]);
-            //Screen.messageString = $"No note with ID {noteId} exist.";
             Screen.SetMessage($"No note with ID {noteId} exist.", Screen.MessageType.Error);
             return;
         }
@@ -61,8 +59,6 @@ public class NoteService
 
         if(note is null)
         {
-            //Screen.UpdateScreenContent([$"The note {noteTitle} doesn't exist."]);
-            //Screen.messageString = $"No note with ID {noteTitle} exist.";
             Screen.SetMessage($"No note with ID {noteTitle} exist.", Screen.MessageType.Error);
             return;
         }
@@ -80,8 +76,6 @@ public class NoteService
 
         if(note.Title is null)
         {
-            //Screen.UpdateScreenContent(["You must provide a title for the note like this: new [note_title]."]);
-            //Screen.messageString = "You must provide a title for the note like this: new [note_title].";
             Screen.SetMessage("You must provide a title for the note like this: new [note_title].", Screen.MessageType.Error);
             return;
         }
@@ -116,7 +110,6 @@ public class NoteService
 
                     if(note is null)
                     {
-                        //Screen.UpdateScreenContent(["Oops. Something went wrong on the database while creating the note."]);
                         Screen.SetMessage("Oops. Something went wrong on the database while creating the note.", Screen.MessageType.Error);
                         return;
                     }
@@ -128,8 +121,6 @@ public class NoteService
 
                     if(note is null)
                     {
-                        //Screen.UpdateScreenContent(["Oops. Something went wrong on the database while updating the note."]);
-                        //Screen.messageString = "Oops. Something went wrong on the database while updating the note.";
                         Screen.SetMessage("Oops. Something went wrong on the database while updating the note.", Screen.MessageType.Error);
                         return;
                     }

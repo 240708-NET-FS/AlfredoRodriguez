@@ -231,7 +231,6 @@ public class TextEditor
                     //String[] words = input.Split();
                     if(words!.Length == 2 && words[0].ToLower().Equals("rename"))
                     {
-                        //SetTitle(words[1]);
                         Title = words[1];
                         done = true;
                         break;
@@ -245,7 +244,6 @@ public class TextEditor
 
         // Put cursor back to its original place.
         Console.ResetColor();
-        //Console.SetCursorPosition(cursorOriginalPos.x, cursorOriginalPos.y);
         Console.SetCursorPosition(cursorPos.x, cursorPos.y);
 
         return exitCode;
