@@ -1,9 +1,7 @@
 namespace ConsoleApplication.Tests;
 
-using System.ComponentModel;
 using Program.DAO;
 using Program.Model;
-using Program.Service;
 
 public class UserServiceTest
 {
