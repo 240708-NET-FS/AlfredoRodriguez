@@ -1,8 +1,6 @@
 namespace Program.Utils;
 
-using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Program.ApplicationController;
 
 
@@ -312,11 +310,6 @@ class Screen
         Console.Write(contextMessage);
         Console.ForegroundColor = ConsoleColor.White;
         Console.SetCursorPosition(4, Console.WindowHeight);
-    }
-
-    public void ClearScreen()
-    {
-        Console.Clear();
     }
 
     internal void PrintMessageString()

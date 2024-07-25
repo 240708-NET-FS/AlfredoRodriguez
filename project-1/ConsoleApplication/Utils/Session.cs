@@ -1,6 +1,6 @@
-using Program.Model;
-
 namespace Program.Utils;
+
+using Program.Model;
 
 // Holds data about the current session.
 public class Session

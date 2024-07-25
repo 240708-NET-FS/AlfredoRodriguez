@@ -1,8 +1,6 @@
 namespace Program.ApplicationController;
 
 using Program.Utils;
-using Program.Service;
-using Program.Model;
 
 // Here we define method handlers for the HOME contex commands.
 public partial class Controller
@@ -21,7 +19,7 @@ public partial class Controller
         String password = args[1];
 
         // Attempt to register the new user.
-        UserService.RegisterUser(name, password);
+        _userService.RegisterUser(name, password);
 
         HomeHome([]);
 
@@ -51,7 +49,7 @@ public partial class Controller
         if(!ValidateInput("DELETEME", [], args)) return -1;
 
         // Attempt to delete the account.
-        UserService.DeleteAccount(Session.GetInstance().User);
+        _userService.DeleteAccount(Session.GetInstance().User);
 
         HomeHome([]);
         
@@ -71,7 +69,7 @@ public partial class Controller
         String password = args[1];
 
         // Login user.
-        UserService.LoginUser(name, password);
+        _userService.LoginUser(name, password);
 
         HomeHome([]);
         

@@ -1,8 +1,5 @@
 namespace Program.Model;
 
-using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
-
 public class User
 {
     public int Id { get; set; }

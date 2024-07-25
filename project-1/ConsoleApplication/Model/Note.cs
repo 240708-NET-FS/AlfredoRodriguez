@@ -1,8 +1,5 @@
 namespace Program.Model;
 
-using System.ComponentModel.DataAnnotations;
-
-
 public class Note
 {
     public int Id { get; set; }

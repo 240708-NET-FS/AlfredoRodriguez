@@ -2,13 +2,12 @@ namespace Program.ApplicationController;
 
 using Program.Utils;
 
-
-// Contains commands that can be accessed trough any command context.
+// Contains commands that can be accessed via any command context.
 // Global connext commands can set the command context at will.
 public partial class Controller
 {
 
-    // ENTRY POINT for HOME context
+    // ENTRY POINT for HOME context.
     // Displays the home screen.
     [Command(context:Command.CommandContext.ANY, name:"HOME", description:
     @"[C]home
@@ -28,7 +27,7 @@ public partial class Controller
         if(user is null) return Welcome();
 
         // Print HOME screen
-        Screen.UpdateScreenContent
+        _screen.UpdateScreenContent
         ([
             $"Welcome, {user}.",
             "",
@@ -44,7 +43,7 @@ public partial class Controller
     [E]Call those two to navigate pages on the console when availible.")]
     public int Next(String[] args)
     {
-        Screen.ChangePage(1);
+        _screen.ChangePage(1);
         return 1;
     }
 
@@ -52,7 +51,7 @@ public partial class Controller
     [Command(context:Command.CommandContext.ANY, name:"<")]
     public int Previous(String[] args)
     {
-        Screen.ChangePage(-1);
+        _screen.ChangePage(-1);
         return 1;
     }
 
@@ -67,7 +66,7 @@ public partial class Controller
         if(!ValidateInput("LOGOUT", [], args)) return -1;
 
         // Log user out.
-        UserService.LogoutUser();
+        _userService.LogoutUser();
 
         HomeHome([]);
         return 1;
@@ -83,7 +82,7 @@ public partial class Controller
         if(!ValidateInput("HELP", [], args)) return -1;
 
         // Print commands.
-        Screen.PrintCommands();
+        _screen.PrintCommands();
         return 1;
     }
 
@@ -109,7 +108,7 @@ public partial class Controller
         Session.GetInstance().CommandContext = Command.CommandContext.HOME;
 
         // Print Welcome screen.
-        Screen.UpdateScreenContent
+        _screen.UpdateScreenContent
         ([
             "Welcome to CloudNotes.",
             "",

@@ -1,6 +1,5 @@
 namespace Program.DAO;
 
-using Microsoft.Data.SqlClient;
 using Program.Data;
 using Program.Model;
 

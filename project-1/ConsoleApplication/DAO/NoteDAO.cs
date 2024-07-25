@@ -1,8 +1,8 @@
+namespace Program.DAO;
+
 using Program.Data;
 using Program.Model;
-using Program.Utils;
 
-namespace Program.DAO;
 public class NoteDAO
 {
     // Retrieves all the notes of a given user.

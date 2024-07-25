@@ -1,10 +1,5 @@
 namespace Program.Data;
 
-using System.Reflection.Metadata;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using Program.Data;
-
 // Since this is an application that only ever performs one query at a time, we can make all the classes
 // use the same single DbContext object.
 // With a singleton connection, we ensure that if we ever forget to close the connection, the singleton does it

@@ -5,6 +5,7 @@ using Program.Model;
 namespace Program;
 
 
+// The entry point of the application.
 public class EntryPoint
 {
     public static void Main(String[] args)

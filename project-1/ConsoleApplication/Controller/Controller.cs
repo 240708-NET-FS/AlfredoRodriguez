@@ -1,12 +1,21 @@
 namespace Program.ApplicationController;
+
 using Program.Service;
 using Program.Utils;
 
+// This part of the Controller contains the fields and util methods.
 public partial class Controller
 {
-    private NoteService NoteService = new NoteService();
-    private Screen Screen = Screen.GetInstance();
-    private UserService UserService = new UserService();
+    private readonly NoteService _noteService =null!;
+    private readonly Screen _screen = null!;
+    private readonly UserService _userService = null!;
+
+    public Controller()
+    {
+        _noteService = new NoteService();
+        _screen = Screen.GetInstance();
+        _userService = new UserService();
+    }
 
     // Validates input, takes care of informing the user if the input is incorrect.
     private bool ValidateInput(String command, String[] expected, String[]? provided)
@@ -15,9 +24,7 @@ public partial class Controller
 
         if(provided.Length == expected.Length) return true;
 
-        command = command.ToUpper();
-
-        Screen.SetMessage($"Incorrect use of the [{command}] command. Type [help] for more information.", Screen.MessageType.Error);
+        _screen.SetMessage($"Incorrect use of the [{command.ToUpper()}] command. Type [help] for more information.", Screen.MessageType.Error);
         
         return false;
     }
@@ -25,7 +32,7 @@ public partial class Controller
     // Executed by the application loop if the user's input fails validation at that level.
     public int CommandNotFound(String msg)
     {
-        Screen.SetMessage(msg, Screen.MessageType.Error);
+        _screen.SetMessage(msg, Screen.MessageType.Error);
         return -1;
     }
 }

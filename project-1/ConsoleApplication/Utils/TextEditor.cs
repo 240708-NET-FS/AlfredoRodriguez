@@ -1,10 +1,4 @@
-using System.ComponentModel;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using Program.Model;
-using Program.Utils;
+namespace Program.Utils;
 
 public class TextEditor
 {
@@ -228,7 +222,6 @@ public class TextEditor
                 // Check if we used the rename [new_title] command.
                 if(input != null && input.Contains("rename"))
                 {
-                    //String[] words = input.Split();
                     if(words!.Length == 2 && words[0].ToLower().Equals("rename"))
                     {
                         Title = words[1];
@@ -358,9 +351,7 @@ public class TextEditor
 
 
         // Convert the final position in container space to console space and set the cursor position to it.
-        //(int x, int y) consoleSpace = FromContainerToConsole(newPosContainerSpace);
         cursorPos = FromContainerToConsole(newPosContainerSpace);
-        //Console.SetCursorPosition(consoleSpace.x, consoleSpace.y);
         Console.SetCursorPosition(cursorPos.x, cursorPos.y);
     }
 

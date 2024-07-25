@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Program.Model;
 
 
+// Manages the connection with the database.
 public class DatabaseContext : DbContext
 {
     public DbSet<User> Users { get; set; } = null!;
@@ -23,11 +24,12 @@ public class DatabaseContext : DbContext
 
             // Re-try whenever one of the following "transitient error" occurs (an error that is temporairly and can potentially be solved via a new try)
             // -2       Timeout Expired: (this happens to me every time I try to interact with the DB after not having done so in a while)
-            // 4060     Login Failed
-            // 40197    Service error while processing request
-            // 40613    DB not currently available
+            // 4060     Login Failed.
+            // 40197    Service error while processing request.
+            // 40613    DB not currently available.
             // 40501    Service is busy.
-            sqlOptions.EnableRetryOnFailure(
+            sqlOptions.EnableRetryOnFailure
+            (
                 maxRetryCount: 2,
                 maxRetryDelay: TimeSpan.FromSeconds(30),
                 errorNumbersToAdd: new int[]{-2, 4060, 40197, 40501, 40613}

@@ -1,7 +1,7 @@
 namespace Program.ApplicationController;
 
-using System.Net;
 using Program.Utils;
+
 
 // Here we define method handlers for the NOTES contex commands.
 public partial class Controller
@@ -23,7 +23,7 @@ public partial class Controller
         // Make sure we are logged in.
         if(user is null)
         {
-            Screen.SetMessage("You must be logged in to execute the [ NOTES ] command.", Screen.MessageType.Error);
+            _screen.SetMessage("You must be logged in to execute the [ NOTES ] command.", Screen.MessageType.Error);
             return -1;
         }
 
@@ -31,7 +31,7 @@ public partial class Controller
         Session.GetInstance().CommandContext = Command.CommandContext.NOTES;
 
         // Print all the notes for that user
-        NoteService.PrintNotes(user);
+        _noteService.PrintNotes(user);
 
         return 1;
     }
@@ -46,7 +46,7 @@ public partial class Controller
         if(!ValidateInput("NEW", ["note_title"], args)) return -1;
 
         // Create note.
-        NoteService.CreateNote(args[0]);
+        _noteService.CreateNote(args[0]);
 
         // Print the list of notes.
         NotesNotes([]);
@@ -67,17 +67,21 @@ public partial class Controller
         // Attempt to open anote.
         // If the user misspells something, we just print the notes again and throw no error to not break the execution flow.
         if(args[0].Equals("-n"))
-            NoteService.OpenNote(args[1]);
+            _noteService.OpenNote(args[1]);
         else if(args[0].Equals("-id"))
         {
             try
             {
-                NoteService.OpenNote(int.Parse(args[1]));
+                _noteService.OpenNote(int.Parse(args[1]));
             }
             catch(FormatException)
             {
-                Screen.SetMessage($"{args[1]} is not a valid note ID.", Screen.MessageType.Error);
+                _screen.SetMessage($"{args[1]} is not a valid note ID.", Screen.MessageType.Error);
             }
+        }
+        else
+        {
+            _screen.SetMessage($"The flag [{args[0]}] is not a valid flag.", Screen.MessageType.Error);
         }
 
         // Print the list of notes.
@@ -96,19 +100,22 @@ public partial class Controller
         if(!ValidateInput("REMOVE", ["flag", "note_title"], args)) return -1;
 
         // Attempt to remove anote.
-        // If the user misspells something, we just print the notes again and throw no error to not break the execution flow.
         if(args[0].Equals("-n"))
-            NoteService.RemoveNote(args[1]);
+            _noteService.RemoveNote(args[1]);
         else if(args[0].Equals("-id"))
         {
             try
             {
-                NoteService.RemoveNote(int.Parse(args[1]));
+                _noteService.RemoveNote(int.Parse(args[1]));
             }
             catch(FormatException)
             {
-                Screen.SetMessage($"{args[1]} is not a valid note ID.", Screen.MessageType.Error);
+                _screen.SetMessage($"{args[1]} is not a valid note ID.", Screen.MessageType.Error);
             }
+        }
+        else
+        {
+            _screen.SetMessage($"The flag [{args[0]}] is not a valid flag.", Screen.MessageType.Error);
         }
 
         // Print the list of notes.

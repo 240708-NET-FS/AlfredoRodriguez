@@ -4,25 +4,25 @@ using System.Reflection;
 using Program.ApplicationController;
 using Program.Utils;
 
-
 // Initializes the program and starts the execution loop.
 public class ConsoleApp
 {
-    private Controller AppController = null!;
-    private MethodInfo[] ControllerMethods = null!;
+    private readonly Controller _appController = null!;
+    private readonly MethodInfo[] _controllerMethods = null!;
 
     public ConsoleApp()
     {
-        AppController = new Controller();
-        ControllerMethods = typeof(Controller).GetMethods();
+        _appController = new Controller();
+        _controllerMethods = typeof(Controller).GetMethods();
     }
 
+    // Contains the application loop.
     public void Run()
     {
         // Holds the command exit code.
         int commandContext = 1;
 
-        // Initialize app
+        // Initializes application.
         Init();
 
         // Application loop.
@@ -32,7 +32,6 @@ public class ConsoleApp
             String? command = null;
             // Holds the arguments for the command.
             String[]? args = null;
-            // Set the command context
 
             // Get and validate input syntax.
             ParseInput(Console.ReadLine(), ref command, ref args);
@@ -45,21 +44,23 @@ public class ConsoleApp
             Screen.GetInstance().PrintScreen();
         }
 
-        // De-initialize app
+        // De-initializes application.
         DeInit();
     }
 
-    // Any initialization tasks go here
+    // Any initialization tasks go here.
     private void Init()
     {
-        AppController.Welcome();
+        _appController.Welcome();
         Screen.GetInstance().PrintScreen();
     }
 
-    // Any de-initialization tasks go here
+    // Any de-initialization tasks go here.
     private void DeInit()
     {
-        Screen.GetInstance().ClearScreen();
+        Console.Clear();
+        Console.ResetColor();
+        Console.CursorVisible = true;
     }
 
     // Retrieves and validates user input.
@@ -67,7 +68,6 @@ public class ConsoleApp
     {
         // If no input, return;
         if(input is null || input.Length == 0) return;
-
 
         // Get words.
         String[] words = input!.Split(' ');
@@ -97,20 +97,20 @@ public class ConsoleApp
         Array.Copy(words, 1, outArgs, 0, outArgs.Length);
     }
 
+    // Given a command and some arguments. Find the controller method responsible for it and execute it.
     private int ExecuteMethodHandler(String? command, String[]? args)
     {
-
         // If no command was provided, do nothing.
         if(command is null) return 1;
 
-        // For each method of the Controller class.
-        foreach (var m in ControllerMethods)
+        // For each method in the Controller class.
+        foreach (var m in _controllerMethods)
         {
             // Try to get the Command Attribute.
             var commandAtt = m.GetCustomAttribute<Command>();
 
             // If none, then skip it.
-            if(commandAtt is null) { continue; }
+            if(commandAtt is null) continue;
             else
             {
                 // If this command atribute is not of type ANY or of the current command context type accepted, continue.
@@ -126,12 +126,12 @@ public class ConsoleApp
                     Object[] methodArgs = {args!};
 
                     // Invoke the method using the controller instance as the instance to invoke it on.
-                    return (int) m.Invoke(AppController, methodArgs)!;
+                    return (int) m.Invoke(_appController, methodArgs)!;
                 }
             }
         }
 
         // If command not found, execute the error command.
-        return AppController.CommandNotFound("Command not found. Type [ help ] for a list of commands");
+        return _appController.CommandNotFound("Command not found. Type [ help ] for a list of commands");
     }
 }
