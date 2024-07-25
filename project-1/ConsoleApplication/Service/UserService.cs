@@ -18,14 +18,9 @@ public class UserService
         Screen = Screen.GetInstance();
     }
 
-    public User? AddUser(String name, String password)
+    public bool DeleteAccount(User? u)
     {
-        return UserDAO.AddUser(new User(){Name = name, Password = password});
-    }
-
-    public bool DeleteAccount()
-    {
-        String? userName = Session.GetInstance().User?.Name;
+        String? userName = u?.Name;
 
         // Check if the user is logged in.
         if(userName == null)

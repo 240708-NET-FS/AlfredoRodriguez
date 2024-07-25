@@ -51,7 +51,7 @@ public partial class Controller
         if(!ValidateInput("DELETEME", [], args)) return -1;
 
         // Attempt to delete the account.
-        UserService.DeleteAccount();
+        UserService.DeleteAccount(Session.GetInstance().User);
 
         HomeHome([]);
         
