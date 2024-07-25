@@ -164,6 +164,6 @@ public class UserService
         // This effectively logs the user out.
         Session.GetInstance().User = null!;
 
-        Screen.UpdateScreenContent(["Bye."]);
+        Screen.SetMessage("Logged out.", Screen.MessageType.Info);
     }
 }
