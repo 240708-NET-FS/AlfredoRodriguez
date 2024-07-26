@@ -32,7 +32,7 @@ public class DatabaseContext : DbContext
             (
                 maxRetryCount: 2,
                 maxRetryDelay: TimeSpan.FromSeconds(30),
-                errorNumbersToAdd: new int[]{-2, 4060, 40197, 40501, 40613}
+                errorNumbersToAdd: new int[]{-2, 4060, 40197, 40501, 40613, 40}
             );
         });
     }

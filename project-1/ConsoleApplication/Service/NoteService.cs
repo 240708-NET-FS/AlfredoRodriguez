@@ -42,7 +42,15 @@ public class NoteService
 
     public void OpenNote(int noteId)
     {
-        Note? note = NoteDAO.GetNoteById(noteId);
+        User? currentUser = Session.GetInstance().User;
+
+        if(currentUser == null)
+        {
+            Screen.SetMessage("You must be logged in to open a note.", Screen.MessageType.Error);
+            return;
+        }
+
+        Note? note = NoteDAO.GetNoteById(noteId, currentUser);
 
         if(note is null)
         {
@@ -55,7 +63,15 @@ public class NoteService
 
     public void OpenNote(String noteTitle)
     {
-        Note? note = NoteDAO.GetNoteByTitle(noteTitle);
+        User? currentUser = Session.GetInstance().User;
+
+        if(currentUser == null)
+        {
+            Screen.SetMessage("You must be logged in to open a note.", Screen.MessageType.Error);
+            return;
+        }
+
+        Note? note = NoteDAO.GetNoteByTitle(noteTitle, currentUser);
 
         if(note is null)
         {
@@ -113,7 +129,6 @@ public class NoteService
                         Screen.SetMessage("Oops. Something went wrong on the database while creating the note.", Screen.MessageType.Error);
                         return;
                     }
-
                 }
                 else
                 {
@@ -133,7 +148,16 @@ public class NoteService
 
     public void RemoveNote(int noteId)
     {
-        Note? note = NoteDAO.RemoveNoteById(noteId);
+
+        User? currentUser = Session.GetInstance().User;
+
+        if(currentUser == null)
+        {
+            Screen.SetMessage("You must be logged in to open a note.", Screen.MessageType.Error);
+            return;
+        }
+
+        Note? note = NoteDAO.RemoveNoteById(noteId, currentUser);
 
         if(note is null)
         {
@@ -144,7 +168,16 @@ public class NoteService
     
     public void RemoveNote(String noteTitle)
     {
-        Note? note = NoteDAO.RemoveNoteByTitle(noteTitle);
+
+        User? currentUser = Session.GetInstance().User;
+
+        if(currentUser == null)
+        {
+            Screen.SetMessage("You must be logged in to open a note.", Screen.MessageType.Error);
+            return;
+        }
+
+        Note? note = NoteDAO.RemoveNoteByTitle(noteTitle, currentUser);
 
         if(note is null)
         {

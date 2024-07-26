@@ -32,21 +32,26 @@ public class NoteDAO
     }
 
     // Attempts to find a note by Id, null if none.
-    public Note? GetNoteById(int noteId)
+    // Optionally lets you filter by User.
+    public Note? GetNoteById(int noteId, User user = null!)
     {
         DatabaseContext c = Connection.Get();
 
-        return c.Notes.Find(noteId);
+        if(user is null)
+            return c.Notes.Find(noteId);
+        
+        return c.Notes.FirstOrDefault(n => n.Id == noteId && n.User == user);
     }
 
     // Attempts to find a note by title, null if none.
-    public Note? GetNoteByTitle(String noteTitle)
+    // Optionally lets you filter by User.
+    public Note? GetNoteByTitle(String noteTitle, User user = null!)
     {
         if(noteTitle is null || noteTitle.Length == 0) throw new ArgumentException("Invalid note title");
 
         DatabaseContext c = Connection.Get();
         
-        return c.Notes.FirstOrDefault<Note>(n => n.Title == noteTitle);
+        return c.Notes.FirstOrDefault<Note>(n => n.Title.Equals(noteTitle) && (user != null ? n.User == user : true));
     }
 
     // Attempts to update a note by Id.
@@ -65,7 +70,7 @@ public class NoteDAO
         return note;
     }
 
-    public Note? RemoveNoteByTitle(String title)
+    public Note? RemoveNoteByTitle(String title, User user = null!)
     {
         if(title is null || title.Length == 0) throw new ArgumentException("Invalid note title");
 
@@ -73,7 +78,7 @@ public class NoteDAO
         DatabaseContext c = Connection.Get();
 
         // Find note to remove
-        Note? toRemove = c.Notes.FirstOrDefault(n => n.Title == title);
+        Note? toRemove = c.Notes.FirstOrDefault(n => n.Title == title && (user != null ? n.User == user : true));
 
         // If it doesnt exists, return null
         if(toRemove is null) return null;
@@ -88,14 +93,14 @@ public class NoteDAO
         return toRemove;
     }
 
-    public Note? RemoveNoteById(int noteId)
+    public Note? RemoveNoteById(int noteId, User user = null!)
     {
         // Get connection
         DatabaseContext c = Connection.Get();
 
         // Find note to remove
-        Note? toRemove = c.Notes.Find(noteId);
-
+        Note? toRemove = c.Notes.FirstOrDefault(n => n.Id == noteId && (user != null ? n.User == user : true));
+            
         // If it doesnt exists, return null
         if(toRemove is null) return null;
 
