@@ -56,7 +56,7 @@ public partial class Controller
 
     // Attempts to load a saved note into the text editor.
     [Command(context:Command.CommandContext.NOTES, name:"open", description:
-    @"[C]open [flag] [id]
+    @"[C]open [flag] [note_title]
     [E] open -n [title] -> opens a note by title (first match).
     [E] open -id [id] -> opens a note by id.")]
     public int NotesOpen(String[] args)
@@ -91,7 +91,7 @@ public partial class Controller
 
     // Attempts to load a saved note into the text editor.
     [Command(context:Command.CommandContext.NOTES, name:"remove", description:
-    @"[C]remove [flag] [id]
+    @"[C]remove [flag] [note_title]
     [E] remove -n [title] -> removes a note by title (first match).
     [E] remove -id [id] -> removes a note by id.")]
     public int NotesRemove(String[] args)
