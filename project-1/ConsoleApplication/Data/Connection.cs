@@ -6,14 +6,14 @@ namespace Program.Data;
 // automatically at the end of the life of the program.
 public class Connection
 {
-    static private DatabaseContext dbContext = null!;
+    static private DatabaseContext? dbContext = null;
 
     private Connection(){}
 
     // Ensures the connection gets closed once the app exits.
     ~Connection()
     {
-        dbContext.Dispose();
+        dbContext?.Dispose();
     }
 
     static public DatabaseContext Get()
@@ -29,7 +29,7 @@ public class Connection
     // In case we want to disconnect manually (for the logout and deleteme commands)
     static public void Dispose()
     {
-        dbContext.Dispose();
-        dbContext = null!;
+        dbContext?.Dispose();
+        dbContext = null;
     }
 }
