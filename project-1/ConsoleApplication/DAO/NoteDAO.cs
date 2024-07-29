@@ -12,11 +12,10 @@ public class NoteDAO
 
         DatabaseContext c = Connection.Get();
 
-        //return c.Notes.Where(u => u.User.Name == username).ToList();
         List<Note> notes = c.Notes.Where(u => u.User.Name == username).ToList();
 
         foreach(var i in notes) c.Entry(i).Reload();
-        
+
         return notes;
     }
 
@@ -45,7 +44,6 @@ public class NoteDAO
         if(user is null)
             return c.Notes.Find(noteId);
         
-        //return c.Notes.FirstOrDefault(n => n.Id == noteId && n.User == user);
         Note? n = c.Notes.FirstOrDefault(n => n.Id == noteId && n.User == user);
 
         if(n != null) c.Entry(n).Reload();
@@ -61,7 +59,6 @@ public class NoteDAO
 
         DatabaseContext c = Connection.Get();
         
-        //return c.Notes.FirstOrDefault<Note>(n => n.Title.Equals(noteTitle) && (user != null ? n.User == user : true));
         Note? n = c.Notes.FirstOrDefault<Note>(n => n.Title.Equals(noteTitle) && (user != null ? n.User == user : true));
 
         // Because I am using the same context, I need to reload the ent to discard unsaved changed to the object.
