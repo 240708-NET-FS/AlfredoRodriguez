@@ -1,9 +1,9 @@
 ### Work repartition
-DB: Azure, Models + Model testing
-DAO: DAO layer + DAO testing
-Service: Service layer + service testing
-Controller: Controller layer + auth
-Frontend: JS/HTML/CSS
+- DB: Azure, Models + Model testing
+- DAO: DAO layer + DAO testing
+- Service: Service layer + service testing
+- Controller: Controller layer + auth
+- Frontend: JS/HTML/CSS
 
 
 ## Pokemon collector
